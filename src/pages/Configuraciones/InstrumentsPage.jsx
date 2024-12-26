@@ -41,8 +41,13 @@ export const InstrumentsPage = () => {
         setIsLoading(true);
         try {
             formData.useInstruments = "PANET";
-            formData.userId = selectedUser
-
+            formData.userId = selectedUser;
+    
+            // Verificar y eliminar accountTypeId si está vacío o no tiene un valor
+            if (!formData.accountTypeId) {
+                delete formData.accountTypeId;
+            }
+    
             if (editIndex !== null) {
                 const instrumentId = instruments[editIndex].id;
                 await instanceWithToken.patch(`instruments/${instrumentId}`, formData);
@@ -52,7 +57,7 @@ export const InstrumentsPage = () => {
                 await instanceWithToken.post("instruments-client", formData);
                 toast.success("Instrumento creado correctamente");
             }
-
+    
             await getInstruments();
             setIsOpen(false);
             resetForm();
@@ -62,6 +67,7 @@ export const InstrumentsPage = () => {
             setIsLoading(false);
         }
     };
+    
 
 
     // Fetch dependent data when country is selected
@@ -378,7 +384,7 @@ export const InstrumentsPage = () => {
                                 )}
 
                                 {/* Mostrar Banco solo si es Cuenta Bancaria */}
-                                {formData.typeInstrument === 'CUENTA_BANCARIA' && (
+                                {['PAGO_MOVIL', 'BILLETERA_MOVIL'].includes(formData.typeInstrument) && (
                                     <Label>
                                         Banco
                                         <select
