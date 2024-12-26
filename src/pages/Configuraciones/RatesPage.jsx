@@ -81,7 +81,7 @@ const RatesPage = () => {
     const loadRates = (countrie) => {
         setPaisOrigen(countrie.name);
         setRates([]);
-        instanceWithToken.get('rates/origen/' + countrie.id).then((result) => {
+        instanceWithToken.get('rate?originId=' + countrie.id).then((result) => {
             setRates(result.data.data);
         });
     };
@@ -170,7 +170,7 @@ const RatesPage = () => {
                                                                 </p>
                                                             </div>
                                                             <div className="ml-auto font-medium flex items-center gap-1">
-                                                                {rate.rate} {rate.destination.currency}
+                                                                {rate.amount} {rate.destination.currency}
                                                             </div>
                                                         </div>
                                                     ))}
