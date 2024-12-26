@@ -41,29 +41,29 @@ export const InstrumentsPage = () => {
         setIsLoading(true);
         try {
             formData.useInstruments = "PANET";
-            formData.userId = selectedUser;
-    
+
             // Verificar y eliminar accountTypeId si está vacío o no tiene un valor
             if (!formData.accountTypeId) {
                 delete formData.accountTypeId;
             }
-    
+
             if (editIndex !== null) {
                 // Eliminar propiedades no deseadas al actualizar
+                const instrumentId = instruments[editIndex].id;
                 delete formData.id;
                 delete formData.publicId;
                 delete formData.createdAt;
                 delete formData.updatedAt;
-    
-                const instrumentId = instruments[editIndex].id;
+                formData.userId = selectedUser;
+
                 await instanceWithToken.patch(`instruments-client/${instrumentId}`, formData);
                 toast.success("Instrumento actualizado correctamente");
             } else {
-                console.log(formData);
+                formData.userId = selectedUser;
                 await instanceWithToken.post("instruments-client", formData);
                 toast.success("Instrumento creado correctamente");
             }
-    
+
             await getInstruments();
             setIsOpen(false);
             resetForm();
@@ -73,8 +73,8 @@ export const InstrumentsPage = () => {
             setIsLoading(false);
         }
     };
-    
-    
+
+
 
 
     // Fetch dependent data when country is selected
@@ -156,6 +156,7 @@ export const InstrumentsPage = () => {
     };
 
     const handleEdit = async (index) => {
+        console.log(index)
         setEditIndex(index);
         const instrumentToEdit = instruments[index];
         // Fetch dependent data before setting form data
@@ -391,7 +392,7 @@ export const InstrumentsPage = () => {
                                 )}
 
                                 {/* Mostrar Banco solo si es Cuenta Bancaria */}
-                                {['PAGO_MOVIL', 'BILLETERA_MOVIL'].includes(formData.typeInstrument) && (
+                                {['PAGO_MOVIL', 'BILLETERA_MOVIL', 'CUENTA_BANCARIA'].includes(formData.typeInstrument) && (
                                     <Label>
                                         Banco
                                         <select

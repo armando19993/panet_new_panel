@@ -24,6 +24,7 @@ export const UsuariosPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [countries, setCountries] = useState([]);
     const [countrySelected, setCountrySelected] = useState(null)
+    const [typeSelected, setTypeSelected] = useState(null)
     const [formData, setFormData] = useState({
         name: "",
         user: "",
@@ -210,6 +211,33 @@ export const UsuariosPage = () => {
     const handleSelectCountry = (e) => {
         const { value } = e.target;
         setCountrySelected(value)
+    };
+
+    const handleSelectedType = (e) => {
+        const { value } = e.target;
+        setTypeSelected(value)
+    }
+
+    const saveWallet = () => {
+        const payload = {
+            userId: userSelected,
+            countryId: countrySelected,
+            type: typeSelected,
+        };
+
+        instanceWithToken.post("wallet", payload)
+            .then((result) => {
+                toast.success("Wallet creada correctamente")
+                setIsOpenAddWallet(false)
+                searchWalletsUser(userSelected, nameWallet)
+            })
+            .catch((error) => {
+                if (error.response && error.response.status === 400) {
+                    toast.error(error.response.data.message || "Ocurrió un error. Verifica los datos enviados.");
+                } else {
+                    toast.error("Ocurrió un error inesperado. Inténtalo de nuevo.");
+                }
+            });
     };
 
 
@@ -406,9 +434,6 @@ export const UsuariosPage = () => {
                 </DialogContent>
             </Dialog>
 
-
-            {/* Modal para Ver Wallets */}
-
             <Dialog open={isOpenWallet} onOpenChange={setIsOpenWallet}>
                 <DialogContent className="w-[95vw] max-w-[600px]">
                     <DialogHeader>
@@ -416,18 +441,15 @@ export const UsuariosPage = () => {
                         <Button onClick={() => setIsOpenAddWallet(true)} className="w-[100%]">Agregar Nuevo Wallet</Button>
                     </DialogHeader>
 
-
+                    
                 </DialogContent>
 
             </Dialog>
 
-
-            {/* Modal para agregar wallet */}
             <Dialog open={isOpenAddWallet} onOpenChange={setIsOpenAddWallet}>
                 <DialogContent className="w-[95vw] max-w-[600px]">
                     <DialogHeader>
                         <DialogTitle>Agregar un Wallet a: {nameWallet}</DialogTitle>
-                        <Button onClick={() => setIsOpenAddWallet(true)} className="w-[100%]">Agregar Nuevo Wallet</Button>
                     </DialogHeader>
 
 
@@ -444,6 +466,22 @@ export const UsuariosPage = () => {
                             </option>
                         ))}
                     </select>
+
+                    <select
+                        name="country"
+                        value={typeSelected}
+                        onChange={handleSelectedType}
+                        className="w-full border rounded p-2 focus:outline-none focus:ring"
+                    >
+                        <option value="">Tipo de Wallet</option>
+                        {['RECEPCION', 'RECARGA', 'GANANCIAS'].map((type) => (
+                            <option key={type} value={type}>
+                                {type}
+                            </option>
+                        ))}
+                    </select>
+
+                    <Button onClick={saveWallet} className="w-[100%]">Guardar Wallet</Button>
                 </DialogContent>
 
             </Dialog>
