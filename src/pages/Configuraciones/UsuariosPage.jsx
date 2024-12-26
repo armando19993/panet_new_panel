@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { instanceWithToken } from "@/utils/instance";
-import { Users, Pencil, Trash2, Plus, Search } from "lucide-react";
+import { Users, Pencil, Trash2, Plus, Search, WalletCards } from "lucide-react";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -14,9 +14,16 @@ export const UsuariosPage = () => {
     const [roles, setRoles] = useState([]);
     const [selectedRoles, setSelectedRoles] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
+    const [isOpenWallet, setIsOpenWallet] = useState(false);
+    const [isOpenAddWallet, setIsOpenAddWallet] = useState(false);
+    const [walletsUser, setWalletUser] = useState([]);
+    const [userSelected, setUserSelected] = useState(null);
+    const [nameWallet, setNameWallet] = useState("");
     const [editIndex, setEditIndex] = useState(null);
     const [searchTerm, setSearchTerm] = useState({ name: "", user: "" });
     const [isLoading, setIsLoading] = useState(false);
+    const [countries, setCountries] = useState([]);
+    const [countrySelected, setCountrySelected] = useState(null)
     const [formData, setFormData] = useState({
         name: "",
         user: "",
@@ -81,7 +88,7 @@ export const UsuariosPage = () => {
                         roleId
                     });
                 }
-                
+
                 toast.success("Usuario creado correctamente");
             }
             await getUsers();
@@ -181,10 +188,35 @@ export const UsuariosPage = () => {
         </div>
     );
 
+    const searchWalletsUser = (id, name) => {
+        setNameWallet(name)
+        setIsOpenWallet(true)
+        setUserSelected(id)
+
+        instanceWithToken.get(`wallet?userId=${id}`).then((result) => {
+            console.log(result.data.data)
+        })
+    }
+
+    const getCountries = async () => {
+        try {
+            const result = await instanceWithToken.get("country");
+            setCountries(result.data.data);
+        } catch (error) {
+            toast.error("Error al cargar la lista de países");
+        }
+    };
+
+    const handleSelectCountry = (e) => {
+        const { value } = e.target;
+        setCountrySelected(value)
+    };
+
 
     useEffect(() => {
         getUsers();
-        getRoles()
+        getRoles();
+        getCountries()
     }, []);
 
     const filteredUsers = users.filter((user) =>
@@ -266,6 +298,9 @@ export const UsuariosPage = () => {
                                             className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                                         >
                                             <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                        <Button onClick={() => searchWalletsUser(user.id, user.name)} variant="ghost" size="sm">
+                                            <WalletCards className="h-4 w-4" />
                                         </Button>
                                     </div>
                                 </TableCell>
@@ -369,6 +404,48 @@ export const UsuariosPage = () => {
                         </Button>
                     </DialogFooter>
                 </DialogContent>
+            </Dialog>
+
+
+            {/* Modal para Ver Wallets */}
+
+            <Dialog open={isOpenWallet} onOpenChange={setIsOpenWallet}>
+                <DialogContent className="w-[95vw] max-w-[600px]">
+                    <DialogHeader>
+                        <DialogTitle>Gestion de Wallets de: {nameWallet}</DialogTitle>
+                        <Button onClick={() => setIsOpenAddWallet(true)} className="w-[100%]">Agregar Nuevo Wallet</Button>
+                    </DialogHeader>
+
+
+                </DialogContent>
+
+            </Dialog>
+
+
+            {/* Modal para agregar wallet */}
+            <Dialog open={isOpenAddWallet} onOpenChange={setIsOpenAddWallet}>
+                <DialogContent className="w-[95vw] max-w-[600px]">
+                    <DialogHeader>
+                        <DialogTitle>Agregar un Wallet a: {nameWallet}</DialogTitle>
+                        <Button onClick={() => setIsOpenAddWallet(true)} className="w-[100%]">Agregar Nuevo Wallet</Button>
+                    </DialogHeader>
+
+
+                    <select
+                        name="country"
+                        value={countrySelected}
+                        onChange={handleSelectCountry}
+                        className="w-full border rounded p-2 focus:outline-none focus:ring"
+                    >
+                        <option value="">Todos los países</option>
+                        {countries.map((country) => (
+                            <option key={country.id} value={country.id}>
+                                {country.name} ({country.code})
+                            </option>
+                        ))}
+                    </select>
+                </DialogContent>
+
             </Dialog>
         </div>
     );

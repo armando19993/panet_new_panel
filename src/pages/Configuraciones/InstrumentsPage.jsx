@@ -8,6 +8,7 @@ import { instanceWithToken } from "@/utils/instance";
 import { Pencil, Trash2, Plus, CreditCard, Search, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
+import Select from 'react-select'
 
 export const InstrumentsPage = () => {
     const [instruments, setInstruments] = useState([]);
@@ -19,6 +20,8 @@ export const InstrumentsPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingDependencies, setIsLoadingDependencies] = useState(false);
     const [searchTerm, setSearchTerm] = useState({ holder: "", country: "", accountType: "" });
+    const [users, setUsers] = useState([])
+    const [selectedUser, setSelectedUser] = useState(null)
     const [formData, setFormData] = useState({
         holder: "",
         accountNumber: "",
@@ -29,6 +32,7 @@ export const InstrumentsPage = () => {
     });
 
     useEffect(() => {
+        getUsers()
         getInstruments();
         getCountries();
     }, []);
@@ -36,9 +40,8 @@ export const InstrumentsPage = () => {
     const handleSave = async () => {
         setIsLoading(true);
         try {
-            // Agregar useInstruments con valor "PANET" al formData
             formData.useInstruments = "PANET";
-            formData.userId = Cookies.get("userId")
+            formData.userId = selectedUser
 
             if (editIndex !== null) {
                 const instrumentId = instruments[editIndex].id;
@@ -50,7 +53,6 @@ export const InstrumentsPage = () => {
                 toast.success("Instrumento creado correctamente");
             }
 
-            // Actualizar los instrumentos después de guardar
             await getInstruments();
             setIsOpen(false);
             resetForm();
@@ -177,6 +179,23 @@ export const InstrumentsPage = () => {
         BILLETERA_MOVIL: "Billetera Móvil",
     };
 
+    const getUsers = () => {
+        instanceWithToken.get('/user/by-roles/shearch?roles=INTERMEDIARIO,DESPACHADOR,SUPERADMIN,DUEÑO DE CUENTA').then((result) => {
+            let users = []
+
+            result.data.data.map((user) => {
+                users.push({ label: `${user.user} - ${user.name}`, value: user.id })
+            })
+
+            setUsers(users)
+        })
+    }
+
+    const handleChange = (selectedOption) => {
+        setSelectedUser(selectedOption.value)
+        console.log("Usuario seleccionado:", selectedOption.value)
+    }
+
     return (
         <div className="p-3 md:p-6 space-y-4 md:space-y-6 max-w-screen-lg mx-auto">
             {/* Header */}
@@ -284,6 +303,18 @@ export const InstrumentsPage = () => {
                     </DialogHeader>
                     <div className="grid grid-cols-1 gap-4">
                         {/* Country selection first */}
+                        <Label>
+                            Dueño de cuenta:
+                            <Select
+                                onChange={handleChange}
+                                options={users}
+                                className="basic-single"
+                                classNamePrefix="select"
+                                isClearable={true}
+                                isSearchable={true}
+                                placeholder="Selecciona un usuario..."
+                            />
+                        </Label>
                         <Label>
                             País
                             <select
