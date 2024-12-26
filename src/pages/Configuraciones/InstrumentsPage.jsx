@@ -50,7 +50,7 @@ export const InstrumentsPage = () => {
     
             if (editIndex !== null) {
                 const instrumentId = instruments[editIndex].id;
-                await instanceWithToken.patch(`instruments/${instrumentId}`, formData);
+                await instanceWithToken.patch(`instruments-client/${instrumentId}`, formData);
                 toast.success("Instrumento actualizado correctamente");
             } else {
                 console.log(formData);
