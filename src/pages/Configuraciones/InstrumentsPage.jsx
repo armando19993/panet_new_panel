@@ -49,6 +49,12 @@ export const InstrumentsPage = () => {
             }
     
             if (editIndex !== null) {
+                // Eliminar propiedades no deseadas al actualizar
+                delete formData.id;
+                delete formData.publicId;
+                delete formData.createdAt;
+                delete formData.updatedAt;
+    
                 const instrumentId = instruments[editIndex].id;
                 await instanceWithToken.patch(`instruments-client/${instrumentId}`, formData);
                 toast.success("Instrumento actualizado correctamente");
@@ -67,6 +73,7 @@ export const InstrumentsPage = () => {
             setIsLoading(false);
         }
     };
+    
     
 
 
