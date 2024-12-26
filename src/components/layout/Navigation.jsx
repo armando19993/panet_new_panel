@@ -5,6 +5,8 @@ import {
   ChevronDown,
   Cog,
   Users,
+  WalletCards,
+  ArrowLeftRight,
 } from "lucide-react";
 import {
   Collapsible,
@@ -19,12 +21,13 @@ export function Navigation({ className }) {
 
   const navItems = [
     { icon: LayoutDashboard, label: "Inicio", href: "/home" },
-    //{ icon: Wallet2, label: "Transacciones", href: "/transactions" },
-    //{ icon: Users, label: "Usuarios", href: "/users" },
+    { icon: ArrowLeftRight, label: "Transacciones", href: "/transactions" },
+    { icon: WalletCards, label: "Recargas", href: "/recharges" },
     {
       icon: Cog,
       label: "Configuraciones",
       subItems: [
+        { label: 'Tasas', href: '/rates' },
         { label: 'Usuarios', href: '/users' },
         { label: "Paises", href: "/countries" },
         { label: "Bancos", href: "/banks" },

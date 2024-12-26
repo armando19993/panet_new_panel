@@ -8,6 +8,7 @@ import BanksPage from "@/pages/Configuraciones/BanksPage";
 import AccountTypesPage from "@/pages/Configuraciones/AccountTypesPage";
 import InstrumentsPage from "@/pages/Configuraciones/InstrumentsPage";
 import UsuariosPage from "@/pages/Configuraciones/UsuariosPage";
+import RatesPage from "@/pages/Configuraciones/RatesPage";
 
 export const MyRoutes = () => {
   return (
@@ -22,6 +23,7 @@ export const MyRoutes = () => {
             <Route path="account-types" element={<AccountTypesPage />} />
             <Route path="instruments" element={<InstrumentsPage/>} />
             <Route path="users" element={<UsuariosPage />} />
+            <Route path="rates" element={<RatesPage />} />
           </Route>
         </Route>
       </Routes>
