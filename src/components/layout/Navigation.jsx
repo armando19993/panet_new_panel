@@ -25,6 +25,7 @@ export function Navigation({ className }) {
       icon: Cog,
       label: "Configuraciones",
       subItems: [
+        { label: 'Usuarios', href: '/users' },
         { label: "Paises", href: "/countries" },
         { label: "Bancos", href: "/banks" },
         { label: "Tipos de Cuenta", href: "/account-types" },
