@@ -195,7 +195,7 @@ export const UsuariosPage = () => {
         setUserSelected(id)
 
         instanceWithToken.get(`wallet?userId=${id}`).then((result) => {
-            console.log(result.data.data)
+            setWalletUser(result.data.data)
         })
     }
 
@@ -441,7 +441,26 @@ export const UsuariosPage = () => {
                         <Button onClick={() => setIsOpenAddWallet(true)} className="w-[100%]">Agregar Nuevo Wallet</Button>
                     </DialogHeader>
 
-                    
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[100px]">Pais</TableHead>
+                                <TableHead>Tipo</TableHead>
+                                <TableHead>Saldo</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {walletsUser.map((wallet, index) => {
+                                return (
+                                    <TableRow key={index}>
+                                        <TableCell>{wallet.country.name}</TableCell>
+                                        <TableCell>{wallet.type}</TableCell>
+                                        <TableCell className="text-right">{wallet.balance}</TableCell>
+                                    </TableRow>
+                                )
+                            })}
+                        </TableBody>
+                    </Table>
                 </DialogContent>
 
             </Dialog>
