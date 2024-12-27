@@ -118,11 +118,10 @@ export const UsuariosPage = () => {
         setEditIndex(null);
     };
 
-    const handleEdit = (index) => {
-        const userToEdit = { ...users[index] };
+    const handleEdit = (user) => {
+        const userToEdit = { ...user };
         delete userToEdit.password;
         setSelectedRoles(userToEdit.roles.map(role => role.roleId));
-        setEditIndex(index);
         setFormData(userToEdit);
         setIsOpen(true);
     };
@@ -304,7 +303,7 @@ export const UsuariosPage = () => {
                     </TableHeader>
                     <TableBody>
                         {filteredUsers.map((user, index) => (
-                            <TableRow key={index} className="hover:bg-muted/50">
+                            <TableRow key={user.id} className="hover:bg-muted/50">
                                 <TableCell className="font-medium">{user.name}</TableCell>
                                 <TableCell>{user.user}</TableCell>
                                 <TableCell>{user.phone || "-"}</TableCell>
@@ -314,7 +313,7 @@ export const UsuariosPage = () => {
                                         <Button
                                             size="sm"
                                             variant="ghost"
-                                            onClick={() => handleEdit(index)}
+                                            onClick={() => handleEdit(user)}
                                             className="h-8 w-8 p-0"
                                         >
                                             <Pencil className="h-4 w-4" />
@@ -327,7 +326,11 @@ export const UsuariosPage = () => {
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
-                                        <Button onClick={() => searchWalletsUser(user.id, user.name)} variant="ghost" size="sm">
+                                        <Button
+                                            onClick={() => searchWalletsUser(user.id, user.name)}
+                                            variant="ghost"
+                                            size="sm"
+                                        >
                                             <WalletCards className="h-4 w-4" />
                                         </Button>
                                     </div>
