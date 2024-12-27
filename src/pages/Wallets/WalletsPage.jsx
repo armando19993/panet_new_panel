@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { instanceWithToken } from "@/utils/instance";
-import { Wallet, Search, Plus, Edit2, ArrowRightLeft } from "lucide-react";
+import { Wallet, Search, Plus, Edit2, ArrowRightLeft, LucideScanEye } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import Select from "react-select";
@@ -253,7 +253,7 @@ export const WalletsPage = () => {
                             <TableHead className="min-w-[120px] font-semibold">Tipo</TableHead>
                             <TableHead className="min-w-[120px] font-semibold">Balance</TableHead>
                             <TableHead className="min-w-[180px] font-semibold">Fecha</TableHead>
-                            <TableHead className="min-w-[120px] font-semibold">Acciones</TableHead>
+                            <TableHead className="min-w-[100px] font-semibold text-center sticky right-0 bg-white">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -290,10 +290,10 @@ export const WalletsPage = () => {
                                 </TableCell>
                                 <TableCell>{formatCurrency(wallet.balance, wallet.country.currency)}</TableCell>
                                 <TableCell>{formatDate(wallet.createdAt)}</TableCell>
-                                <TableCell>
+                                <TableCell className="sticky right-0 bg-white">
                                     <div className="flex gap-2">
                                         <Button
-                                            variant="outline"
+                                            variant="ghost"
                                             size="sm"
                                             onClick={() => {
                                                 setEditBalanceData({
@@ -304,10 +304,10 @@ export const WalletsPage = () => {
                                                 setIsEditBalanceOpen(true);
                                             }}
                                         >
-                                            <Edit2 className="h-4 w-4" />
+                                            <Edit2 className="h-4 w-4 text-blue600" />
                                         </Button>
                                         <Button
-                                            variant="outline"
+                                            variant="ghost"
                                             size="sm"
                                             onClick={() => {
                                                 setTransferData({
@@ -317,9 +317,11 @@ export const WalletsPage = () => {
                                                 });
                                                 setIsTransferOpen(true);
                                             }}
+                                            className="text-green"
                                         >
-                                            <ArrowRightLeft className="h-4 w-4" />
+                                            <ArrowRightLeft className="h-4 w-4 text-green" />
                                         </Button>
+                                        {/* TODO: Agregar boton que permita ver el historial de transacciones del wallet */}
                                     </div>
                                 </TableCell>
                             </TableRow>
