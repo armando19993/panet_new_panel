@@ -392,24 +392,22 @@ export const InstrumentsPage = () => {
                                 )}
 
                                 {/* Mostrar Banco solo si es Cuenta Bancaria */}
-                                {['PAGO_MOVIL', 'BILLETERA_MOVIL', 'CUENTA_BANCARIA'].includes(formData.typeInstrument) && (
-                                    <Label>
-                                        Banco
-                                        <select
-                                            name="bankId"
-                                            value={formData.bankId}
-                                            onChange={handleInputChange}
-                                            className="w-full border rounded p-2 focus:outline-none focus:ring"
-                                        >
-                                            <option value="">Seleccionar banco</option>
-                                            {banks.map((bank) => (
-                                                <option key={bank.id} value={bank.id}>
-                                                    {bank.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </Label>
-                                )}
+                                <Label>
+                                    Banco
+                                    <select
+                                        name="bankId"
+                                        value={formData.bankId}
+                                        onChange={handleInputChange}
+                                        className="w-full border rounded p-2 focus:outline-none focus:ring"
+                                    >
+                                        <option value="">Seleccionar banco</option>
+                                        {banks.map((bank) => (
+                                            <option key={bank.id} value={bank.id}>
+                                                {bank.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </Label>
 
                                 {/* Mostrar Documento, Cuenta y Titular solo si el tipo de instrumento es PAGO_MOVIL o BILLETERA_MOVIL */}
                                 {['PAGO_MOVIL', 'BILLETERA_MOVIL', 'CUENTA_BANCARIA'].includes(formData.typeInstrument) && (
