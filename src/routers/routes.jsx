@@ -10,6 +10,7 @@ import InstrumentsPage from "@/pages/Configuraciones/InstrumentsPage";
 import UsuariosPage from "@/pages/Configuraciones/UsuariosPage";
 import RatesPage from "@/pages/Configuraciones/RatesPage";
 import RecargasPage from "@/pages/Recargas/RecargasPage";
+import WalletsPage from "@/pages/Wallets/WalletsPage";
 
 export const MyRoutes = () => {
   return (
@@ -26,6 +27,7 @@ export const MyRoutes = () => {
             <Route path="users" element={<UsuariosPage />} />
             <Route path="rates" element={<RatesPage />} />
             <Route path="recharges" element={<RecargasPage />} />
+            <Route path="wallets" element={<WalletsPage />} />
           </Route>
         </Route>
       </Routes>

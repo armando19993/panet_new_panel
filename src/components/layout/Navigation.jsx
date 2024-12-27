@@ -29,6 +29,7 @@ export function Navigation({ className }) {
       subItems: [
         { label: 'Tasas', href: '/rates' },
         { label: 'Usuarios', href: '/users' },
+        { label: 'Wallets', href: '/wallets' },
         { label: "Paises", href: "/countries" },
         { label: "Bancos", href: "/banks" },
         { label: "Tipos de Cuenta", href: "/account-types" },
