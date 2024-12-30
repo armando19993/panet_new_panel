@@ -150,6 +150,7 @@ const ColaPage = () => {
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Tipo</TableHead>
+              <TableHead>Encargado</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead>Monto</TableHead>
               <TableHead>País</TableHead>
@@ -162,6 +163,7 @@ const ColaPage = () => {
               <TableRow key={item.id}>
                 <TableCell>{item.publicId}</TableCell>
                 <TableCell>{item.type}</TableCell>
+                <TableCell>{item.user.name}</TableCell>
                 <TableCell>
                   <span className={`px-2 py-1 rounded-full text-sm ${item.status === 'INICIADA' ? 'bg-yellow-100 text-yellow-800' :
                     item.status === 'CERRADA' ? 'bg-green-100 text-green-800' :
