@@ -47,6 +47,9 @@ export const WalletsPage = () => {
         if(currency === 'DOLAR DIGITAL'){
             currency = 'USD'
         }
+        if(currency === 'DO'){
+            currency = 'DOP'
+        }
         return new Intl.NumberFormat('es-PE', {
             style: 'currency',
             currency: currency
