@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { instanceWithToken } from "@/utils/instance";
-import { Wallet, Pencil, Trash2, Plus, Search, FileText, TicketCheck } from "lucide-react";
+import { Wallet, Pencil, Trash2, Plus, Search, Tag, TicketCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -266,6 +266,7 @@ export const RecargasPage = () => {
                                         >
                                             <TicketCheck className="h-4 w-4" />
                                         </Button>
+
                                     </div>
 
                                 </TableCell>
@@ -334,6 +335,7 @@ export const RecargasPage = () => {
                                 placeholder="Número de referencia"
                             />
                         </Label>
+                        <img src={formData.comprobante} />
                     </div>
                     <DialogFooter className="mt-4 flex flex-col sm:flex-row gap-2">
                         <Button
