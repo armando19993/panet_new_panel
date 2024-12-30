@@ -85,7 +85,9 @@ const ColaPage = () => {
 
   const transferir = () => {
     console.log(selectedUser)
-    instanceWithToken.post('transaction/transferir', {id: idTT, userId: selectedUser})
+    instanceWithToken.post('transaction/transferir', {id: idTT, userId: selectedUser}).then((result) => {
+      setModalShow(false)
+    })
   }
 
 
