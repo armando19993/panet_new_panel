@@ -108,7 +108,7 @@ const ColaPage = () => {
             {item.transaction.montoOrigen} {item.transaction.monedaOrigen} →{' '}
             {item.transaction.montoDestino} {item.transaction.monedaDestino}
           </TableCell>
-          <TableCell>{item.transaction.origen?.name || '-'}</TableCell>
+          <TableCell>{item.transaction.destino?.name || '-'}</TableCell>
         </>
       );
     }
