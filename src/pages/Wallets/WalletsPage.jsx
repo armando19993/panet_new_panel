@@ -294,7 +294,7 @@ export const WalletsPage = () => {
                                 <TableCell>
                                     <Badge>{wallet.type}</Badge>
                                 </TableCell>
-                                <TableCell>{formatCurrency(wallet.balance, wallet.country.currency)}</TableCell>
+                                <TableCell>{wallet.balance} {wallet.country.currency}</TableCell>
                                 <TableCell>{formatDate(wallet.createdAt)}</TableCell>
                                 <TableCell className="sticky right-0 bg-white">
                                     <div className="flex gap-2">
