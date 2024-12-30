@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { default as SelectAutomatic } from 'react-select';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 
 const ColaPage = () => {
@@ -85,8 +86,10 @@ const ColaPage = () => {
 
   const transferir = () => {
     console.log(selectedUser)
-    instanceWithToken.post('transaction/transferir', {id: idTT, userId: selectedUser}).then((result) => {
+    instanceWithToken.post('transaction/transferir', { id: idTT, userId: selectedUser }).then((result) => {
       setModalShow(false)
+      toast.success("Transaccion Transferida correctamente")
+      getCola()
     })
   }
 
@@ -207,7 +210,7 @@ const ColaPage = () => {
             />
           </Label>
 
-          <Button onClick={() => {transferir()}} >Porcesar Transferencia</Button>
+          <Button onClick={() => { transferir() }} >Porcesar Transferencia</Button>
         </DialogContent>
       </Dialog>
     </div>
