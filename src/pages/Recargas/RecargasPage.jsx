@@ -277,7 +277,7 @@ export const RecargasPage = () => {
                                         <Button
                                         size="sm"
                                         variant="ghost"
-                                        onClick={() => handlreComprobante(recarga)}
+                                        onClick={() => handlreComprobante(index)}
                                         className="h-8 w-8 p-0"
                                         >
                                             <Tag className="h-4 w-4" />
