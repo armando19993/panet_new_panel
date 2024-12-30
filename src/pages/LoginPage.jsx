@@ -7,8 +7,10 @@ import { toast } from "sonner";
 import { instanceWithToken } from "@/utils/instance";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { Loader2 } from "lucide-react";
 
 export function LoginPage() {
+  const [loading, setLoading] = useState(false)
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ export function LoginPage() {
       toast.error("Por favor ingrese su usuario y contraseña");
       return;
     }
-
+    setLoading(true)
     instanceWithToken
       .post("auth/login", {
         user,
@@ -44,6 +46,7 @@ export function LoginPage() {
       })
       .catch((error) => {
         toast.error("Usuario o contraseña incorrecta");
+        setLoading(false)
       });
   };
 
@@ -94,9 +97,11 @@ export function LoginPage() {
             />
           </div>
           <Button
+            disabled={loading}
             onClick={login}
             className="w-full bg-teal-500 hover:bg-teal-600 text-white mt-4"
           >
+            {loading && <Loader2 className="animate-spin" />}
             Iniciar Sesion
           </Button>
           <div className="mt-4 text-center">

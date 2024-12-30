@@ -170,11 +170,14 @@ export const RecargasPage = () => {
     }, []);
 
     const filteredRecargas = recargas.filter((recarga) => {
-        const walletMatch = recarga.wallet.consumer_id.toLowerCase().includes(searchTerm.wallet.toLowerCase());
+        const walletId = recarga.wallet?.consumer_id || ""; // Si `wallet` es null, usa una cadena vacía
+        const walletMatch = walletId.toLowerCase().includes(searchTerm.wallet.toLowerCase());
         const statusMatch = !searchTerm.status || recarga.status === searchTerm.status;
-
+    
         return walletMatch && statusMatch;
     });
+    
+    
 
     return (
         <div className="p-3 md:p-6 space-y-4 md:space-y-6 max-w-screen-lg mx-auto">
