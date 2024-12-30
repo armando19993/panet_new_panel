@@ -29,6 +29,7 @@ export const InstrumentsPage = () => {
         countryId: "",
         bankId: "",
         typeInstrument: "PAGO_MOVIL",
+        profit: ""
     });
 
     useEffect(() => {
@@ -47,19 +48,33 @@ export const InstrumentsPage = () => {
                 delete formData.accountTypeId;
             }
 
+            // Convertir profit a número decimal
+            if (formData.profit) {
+                formData.profit = parseFloat(formData.profit);
+            }
+
             if (editIndex !== null) {
-                // Eliminar propiedades no deseadas al actualizar
+                // Obtener el ID del instrumento a editar
                 const instrumentId = instruments[editIndex].id;
+
+                // Eliminar propiedades no deseadas al actualizar
                 delete formData.id;
                 delete formData.publicId;
                 delete formData.createdAt;
                 delete formData.updatedAt;
+                delete formData.bank;
+                delete formData.country;
+                delete formData.user;
+                delete formData.Client;
+                delete formData.accountType;
+
                 formData.userId = selectedUser;
 
                 await instanceWithToken.patch(`instruments-client/${instrumentId}`, formData);
                 toast.success("Instrumento actualizado correctamente");
             } else {
                 formData.userId = selectedUser;
+
                 await instanceWithToken.post("instruments-client", formData);
                 toast.success("Instrumento creado correctamente");
             }
@@ -73,9 +88,6 @@ export const InstrumentsPage = () => {
             setIsLoading(false);
         }
     };
-
-
-
 
     // Fetch dependent data when country is selected
     useEffect(() => {
@@ -151,6 +163,7 @@ export const InstrumentsPage = () => {
             countryId: "",
             bankId: "",
             typeInstrument: "PAGO_MOVIL",
+            profit: ""
         });
         setEditIndex(null);
     };
@@ -464,6 +477,16 @@ export const InstrumentsPage = () => {
                                         placeholder={formData.typeInstrument === 'PAGO_MOVIL' ? 'Número de teléfono' :
                                             formData.typeInstrument === 'BILLETERA_MOVIL' ? 'Número billetera' :
                                                 formData.typeInstrument === 'CUENTA_DIGITAL' ? 'Id de billetera' : 'Número de cuenta'}
+                                    />
+                                </Label>
+
+                                <Label>
+                                    Ganancia %
+                                    <Input
+                                        name="profit"
+                                        value={formData.profit}
+                                        onChange={handleInputChange}
+                                        placeholder={'Ganancia %'}
                                     />
                                 </Label>
 
