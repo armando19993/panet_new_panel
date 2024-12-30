@@ -44,6 +44,9 @@ export const WalletsPage = () => {
 
     // Funciones de utilidad
     const formatCurrency = (amount, currency = "PEN") => {
+        if(currency === 'DOLAR DIGITAL'){
+            currency = 'USD'
+        }
         return new Intl.NumberFormat('es-PE', {
             style: 'currency',
             currency: currency
