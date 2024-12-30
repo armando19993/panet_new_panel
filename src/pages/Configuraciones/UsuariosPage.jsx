@@ -23,8 +23,8 @@ export const UsuariosPage = () => {
     const [searchTerm, setSearchTerm] = useState({ name: "", user: "" });
     const [isLoading, setIsLoading] = useState(false);
     const [countries, setCountries] = useState([]);
-    const [countrySelected, setCountrySelected] = useState(null)
-    const [typeSelected, setTypeSelected] = useState(null)
+    const [countrySelected, setCountrySelected] = useState("");
+    const [typeSelected, setTypeSelected] = useState("");
     const [formData, setFormData] = useState({
         name: "",
         user: "",
@@ -61,12 +61,12 @@ export const UsuariosPage = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSearchChange = (e) => {
         const { name, value } = e.target;
-        setSearchTerm({ ...searchTerm, [name]: value });
+        setSearchTerm(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSave = async () => {
@@ -76,8 +76,7 @@ export const UsuariosPage = () => {
             delete userData.roles;
 
             if (editIndex !== null) {
-                const userId = users[editIndex].id;
-                await instanceWithToken.patch(`user/${userId}`, userData);
+                await instanceWithToken.patch(`user/${userData.id}`, userData);
                 toast.success("Usuario actualizado correctamente");
             } else {
                 const response = await instanceWithToken.post("user", userData);
@@ -113,12 +112,15 @@ export const UsuariosPage = () => {
             password: "",
             phone: "",
             profitPercent: "0.00",
-            referredBy: ""
+            referredBy: "",
+            roles: []
         });
         setEditIndex(null);
+        setSelectedRoles([]);
     };
 
-    const handleEdit = (user) => {
+    const handleEdit = (user, index) => {
+        setEditIndex(index);
         const userToEdit = { ...user };
         delete userToEdit.password;
         setSelectedRoles(userToEdit.roles.map(role => role.roleId));
@@ -146,11 +148,68 @@ export const UsuariosPage = () => {
         }
     };
 
-    const getRoles = () => {
-        instanceWithToken.get("role").then((result) => {
-            setRoles(result.data.data)
-        })
-    }
+    const getRoles = async () => {
+        try {
+            const result = await instanceWithToken.get("role");
+            setRoles(result.data.data);
+        } catch (error) {
+            toast.error("Error al cargar roles");
+        }
+    };
+
+    const handleOpenCreate = () => {
+        resetForm();
+        setIsOpen(true);
+    };
+
+    const searchWalletsUser = (id, name) => {
+        setNameWallet(name);
+        setIsOpenWallet(true);
+        setUserSelected(id);
+
+        instanceWithToken.get(`wallet?userId=${id}`).then((result) => {
+            setWalletUser(result.data.data);
+        });
+    };
+
+    const getCountries = async () => {
+        try {
+            const result = await instanceWithToken.get("country");
+            setCountries(result.data.data);
+        } catch (error) {
+            toast.error("Error al cargar la lista de países");
+        }
+    };
+
+    const handleSelectCountry = (e) => {
+        setCountrySelected(e.target.value);
+    };
+
+    const handleSelectedType = (e) => {
+        setTypeSelected(e.target.value);
+    };
+
+    const saveWallet = () => {
+        const payload = {
+            userId: userSelected,
+            countryId: countrySelected,
+            type: typeSelected,
+        };
+
+        instanceWithToken.post("wallet", payload)
+            .then(() => {
+                toast.success("Wallet creada correctamente");
+                setIsOpenAddWallet(false);
+                searchWalletsUser(userSelected, nameWallet);
+            })
+            .catch((error) => {
+                if (error.response?.status === 400) {
+                    toast.error(error.response.data.message || "Ocurrió un error. Verifica los datos enviados.");
+                } else {
+                    toast.error("Ocurrió un error inesperado. Inténtalo de nuevo.");
+                }
+            });
+    };
 
     const RolesSection = ({ roles, formData, selectedRoles, handleRoleChange, setSelectedRoles }) => (
         <div className="space-y-4">
@@ -188,62 +247,10 @@ export const UsuariosPage = () => {
         </div>
     );
 
-    const searchWalletsUser = (id, name) => {
-        setNameWallet(name)
-        setIsOpenWallet(true)
-        setUserSelected(id)
-
-        instanceWithToken.get(`wallet?userId=${id}`).then((result) => {
-            setWalletUser(result.data.data)
-        })
-    }
-
-    const getCountries = async () => {
-        try {
-            const result = await instanceWithToken.get("country");
-            setCountries(result.data.data);
-        } catch (error) {
-            toast.error("Error al cargar la lista de países");
-        }
-    };
-
-    const handleSelectCountry = (e) => {
-        const { value } = e.target;
-        setCountrySelected(value)
-    };
-
-    const handleSelectedType = (e) => {
-        const { value } = e.target;
-        setTypeSelected(value)
-    }
-
-    const saveWallet = () => {
-        const payload = {
-            userId: userSelected,
-            countryId: countrySelected,
-            type: typeSelected,
-        };
-
-        instanceWithToken.post("wallet", payload)
-            .then((result) => {
-                toast.success("Wallet creada correctamente")
-                setIsOpenAddWallet(false)
-                searchWalletsUser(userSelected, nameWallet)
-            })
-            .catch((error) => {
-                if (error.response && error.response.status === 400) {
-                    toast.error(error.response.data.message || "Ocurrió un error. Verifica los datos enviados.");
-                } else {
-                    toast.error("Ocurrió un error inesperado. Inténtalo de nuevo.");
-                }
-            });
-    };
-
-
     useEffect(() => {
         getUsers();
         getRoles();
-        getCountries()
+        getCountries();
     }, []);
 
     const filteredUsers = users.filter((user) =>
@@ -253,19 +260,17 @@ export const UsuariosPage = () => {
 
     return (
         <div className="p-3 md:p-6 space-y-4 md:space-y-6 max-w-screen-lg mx-auto">
-            {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-2">
                 <div className="flex items-center gap-2">
                     <Users className="h-6 w-6 text-primary" />
                     <h1 className="text-xl md:text-2xl font-bold">Administración de Usuarios</h1>
                 </div>
-                <Button onClick={() => setIsOpen(true)} className="w-full sm:w-auto flex items-center gap-2">
+                <Button onClick={handleOpenCreate} className="w-full sm:w-auto flex items-center gap-2">
                     <Plus className="h-4 w-4" />
                     Agregar Usuario
                 </Button>
             </div>
 
-            {/* Search */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="relative w-full">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -289,7 +294,6 @@ export const UsuariosPage = () => {
                 </div>
             </div>
 
-            {/* Table */}
             <div className="rounded-md border overflow-x-auto bg-white shadow">
                 <Table>
                     <TableHeader>
@@ -313,7 +317,7 @@ export const UsuariosPage = () => {
                                         <Button
                                             size="sm"
                                             variant="ghost"
-                                            onClick={() => handleEdit(user)}
+                                            onClick={() => handleEdit(user, index)}
                                             className="h-8 w-8 p-0"
                                         >
                                             <Pencil className="h-4 w-4" />
@@ -341,8 +345,10 @@ export const UsuariosPage = () => {
                 </Table>
             </div>
 
-            {/* Modal */}
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <Dialog open={isOpen} onOpenChange={(open) => {
+                if (!open) resetForm();
+                setIsOpen(open);
+            }}>
                 <DialogContent className="w-[95vw] max-w-[600px]">
                     <DialogHeader>
                         <DialogTitle>{editIndex !== null ? "Editar Usuario" : "Agregar Usuario"}</DialogTitle>
@@ -440,32 +446,29 @@ export const UsuariosPage = () => {
             <Dialog open={isOpenWallet} onOpenChange={setIsOpenWallet}>
                 <DialogContent className="w-[95vw] max-w-[600px]">
                     <DialogHeader>
-                        <DialogTitle>Gestion de Wallets de: {nameWallet}</DialogTitle>
+                        <DialogTitle>Gestión de Wallets de: {nameWallet}</DialogTitle>
                         <Button onClick={() => setIsOpenAddWallet(true)} className="w-[100%]">Agregar Nuevo Wallet</Button>
                     </DialogHeader>
 
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[100px]">Pais</TableHead>
+                                <TableHead className="w-[100px]">País</TableHead>
                                 <TableHead>Tipo</TableHead>
                                 <TableHead>Saldo</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {walletsUser.map((wallet, index) => {
-                                return (
-                                    <TableRow key={index}>
-                                        <TableCell>{wallet.country.name}</TableCell>
-                                        <TableCell>{wallet.type}</TableCell>
-                                        <TableCell className="text-right">{wallet.balance}</TableCell>
-                                    </TableRow>
-                                )
-                            })}
+                            {walletsUser.map((wallet, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>{wallet.country.name}</TableCell>
+                                    <TableCell>{wallet.type}</TableCell>
+                                    <TableCell className="text-right">{wallet.balance}</TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </DialogContent>
-
             </Dialog>
 
             <Dialog open={isOpenAddWallet} onOpenChange={setIsOpenAddWallet}>
@@ -473,7 +476,6 @@ export const UsuariosPage = () => {
                     <DialogHeader>
                         <DialogTitle>Agregar un Wallet a: {nameWallet}</DialogTitle>
                     </DialogHeader>
-
 
                     <select
                         name="country"
@@ -490,7 +492,7 @@ export const UsuariosPage = () => {
                     </select>
 
                     <select
-                        name="country"
+                        name="type"
                         value={typeSelected}
                         onChange={handleSelectedType}
                         className="w-full border rounded p-2 focus:outline-none focus:ring"
@@ -505,7 +507,6 @@ export const UsuariosPage = () => {
 
                     <Button onClick={saveWallet} className="w-[100%]">Guardar Wallet</Button>
                 </DialogContent>
-
             </Dialog>
         </div>
     );

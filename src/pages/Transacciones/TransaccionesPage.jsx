@@ -18,7 +18,7 @@ const TransaccionesPage = () => {
   const [filterDate, setFilterDate] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1); // Página actual
-  const recordsPerPage = 50; // Máximo de registros por página
+  const recordsPerPage = 20; // Máximo de registros por página
 
   const getTransactions = () => {
     instanceWithToken.get('transaction').then((result) => {
