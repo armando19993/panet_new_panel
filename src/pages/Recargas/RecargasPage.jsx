@@ -239,7 +239,7 @@ export const RecargasPage = () => {
                                         </span>
                                     </div>
                                 </TableCell>
-                                <TableCell>{formatCurrency(recarga.amount, recarga.wallet.country.currency)}</TableCell>
+                                <TableCell>{recarga.amount} {recarga.wallet.country.currency}</TableCell>
                                 <TableCell>
                                     <Badge className={statusStyles[recarga.status]}>
                                         {recarga.status}
