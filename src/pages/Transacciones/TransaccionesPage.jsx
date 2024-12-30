@@ -153,10 +153,10 @@ const TransaccionesPage = () => {
                 </TableCell>
                 <TableCell>{transaction.creador.name}</TableCell>
                 <TableCell>
-                  {formatCurrency(transaction.montoOrigen, transaction.monedaOrigen)}
+                  {transaction.montoOrigen} {transaction.monedaOrigen}
                 </TableCell>
                 <TableCell>
-                  {formatCurrency(transaction.montoDestino, transaction.monedaDestino)}
+                  {transaction.montoDestino} {transaction.monedaDestino}
                 </TableCell>
                 <TableCell>
                   <Badge className={statusStyles[transaction.status]}>
