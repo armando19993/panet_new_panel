@@ -165,7 +165,7 @@ const ColaPage = () => {
           </TableHeader>
           <TableBody>
             {filteredCola.map((item) => (
-              <TableRow key={item.id}>
+              <TableRow key={item.recarga ? 'REC-2025-'+item.recarga.id : 'TRX-2025-'+item.transaction.id}>
                 <TableCell>{item.publicId}</TableCell>
                 <TableCell>{item.type}</TableCell>
                 <TableCell>{item.user.name}</TableCell>
