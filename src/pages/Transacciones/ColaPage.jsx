@@ -3,7 +3,7 @@ import { instanceWithToken } from '@/utils/instance';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ClipboardList, RailSymbol } from 'lucide-react';
+import { ClipboardList, RailSymbol, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { default as SelectAutomatic } from 'react-select';
@@ -93,6 +93,15 @@ const ColaPage = () => {
     })
   }
 
+  const eliminarTransaccion = (id) => {
+    instanceWithToken.patch('cola-espera/' + id, {
+      status: 'CERRADA'
+    }).then((result) => {
+      console.log(result.data.data)
+      getCola()
+    })
+  }
+
 
   useEffect(() => {
     getCola();
@@ -166,7 +175,7 @@ const ColaPage = () => {
           <TableBody>
             {filteredCola.map((item, index) => (
               <TableRow key={index}>
-                <TableCell>{item.recharge ? 'REC-2025-'+item.recharge.publicId : 'TRX-2025-'+item.transaction.publicId}</TableCell>
+                <TableCell>{item.recharge ? 'REC-2025-' + item.recharge.publicId : 'TRX-2025-' + item.transaction.publicId}</TableCell>
                 <TableCell>{item.type}</TableCell>
                 <TableCell>{item.user.name}</TableCell>
                 <TableCell>
@@ -183,7 +192,9 @@ const ColaPage = () => {
                   <Button onClick={() => transferTransaction(item.id, item.publicId, item.type)} variant="ghost" >
                     <RailSymbol />
                   </Button>
-
+                  {item.status === 'INICIADA' && <Button onClick={() => eliminarTransaccion(item.id)} variant="ghost" >
+                    <Trash2 />
+                  </Button>}
                 </TableCell>
               </TableRow>
             ))}
