@@ -18,6 +18,7 @@ export const RecargasPage = () => {
     const [editIndex, setEditIndex] = useState(null);
     const [searchTerm, setSearchTerm] = useState({ wallet: "", status: "" });
     const [isLoading, setIsLoading] = useState(false);
+    const [comprobanteOpen, setComprobanteOpen] = useState(false)
     const [formData, setFormData] = useState({
         amount: "",
         walletId: "",
@@ -103,6 +104,12 @@ export const RecargasPage = () => {
         setIsOpen(true);
     };
 
+    const handlreComprobante = (index) => {
+        setEditIndex(index);
+        setFormData(recargas[index]);
+        setComprobanteOpen(true);
+    };
+
     const getRecargas = async () => {
         try {
             const result = await instanceWithToken.get("recharge");
@@ -158,7 +165,7 @@ export const RecargasPage = () => {
                             <span className="text-gray-600">{recarga.comentario}</span>
                         </div>
                     )}
-                    
+
                 </div>
             </Card>
         );
@@ -173,11 +180,11 @@ export const RecargasPage = () => {
         const walletId = recarga.wallet?.consumer_id || ""; // Si `wallet` es null, usa una cadena vacía
         const walletMatch = walletId.toLowerCase().includes(searchTerm.wallet.toLowerCase());
         const statusMatch = !searchTerm.status || recarga.status === searchTerm.status;
-    
+
         return walletMatch && statusMatch;
     });
-    
-    
+
+
 
     return (
         <div className="p-3 md:p-6 space-y-4 md:space-y-6 max-w-screen-lg mx-auto">
@@ -266,7 +273,15 @@ export const RecargasPage = () => {
                                         >
                                             <TicketCheck className="h-4 w-4" />
                                         </Button>
-
+                                        
+                                        <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => handlreComprobante(recarga)}
+                                        className="h-8 w-8 p-0"
+                                        >
+                                            <Tag className="h-4 w-4" />
+                                        </Button>
                                     </div>
 
                                 </TableCell>
@@ -277,6 +292,13 @@ export const RecargasPage = () => {
             </div>
 
             {/* Modal */}
+
+            <Dialog open={comprobanteOpen} onOpenChange={setComprobanteOpen}>
+                <DialogContent className="w-[95vw] max-w-[600px]">
+                    <img src={formData.comprobante} className="w-[100]" />
+                </DialogContent>
+            </Dialog>
+
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogContent className="w-[95vw] max-w-[600px]">
                     <DialogHeader>
@@ -335,7 +357,6 @@ export const RecargasPage = () => {
                                 placeholder="Número de referencia"
                             />
                         </Label>
-                        <img src={formData.comprobante} />
                     </div>
                     <DialogFooter className="mt-4 flex flex-col sm:flex-row gap-2">
                         <Button
