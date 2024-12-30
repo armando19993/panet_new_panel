@@ -106,7 +106,7 @@ export const InstrumentsPage = () => {
 
     const getInstruments = async () => {
         try {
-            const result = await instanceWithToken.get("instruments-client");
+            const result = await instanceWithToken.get("instruments-client?useInstruments=PANET");
             setInstruments(result.data.data);
         } catch (error) {
             toast.error("Error al cargar los instrumentos");

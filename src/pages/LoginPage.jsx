@@ -50,6 +50,14 @@ export function LoginPage() {
       });
   };
 
+  const resetPassword = () => {
+    if(!user){
+      toast.error("Para poder iniciar el proceso de recuperacion escribe tu nombre de usuario")
+    }
+
+    
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0D0F17]">
       <Card className="w-full max-w-md bg-[#1C1F2E] border-gray-800">
@@ -105,9 +113,10 @@ export function LoginPage() {
             Iniciar Sesion
           </Button>
           <div className="mt-4 text-center">
-            <a href="#" className="text-sm text-teal-500 hover:underline">
-              Olvide Mi Contraseña
-            </a>
+            <Button onClick={resetPassword} className="text-sm text-teal-500 hover:underline">
+Olvide Mi Contraseña
+            </Button>
+
           </div>
         </CardContent>
       </Card>
