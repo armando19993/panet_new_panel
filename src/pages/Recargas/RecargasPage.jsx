@@ -239,7 +239,7 @@ export const RecargasPage = () => {
                         {filteredRecargas.map((recarga, index) => (
                             <TableRow key={index} className="hover:bg-muted/50">
                                 <TableCell className="font-medium">REC-2025-{recarga.publicId}</TableCell>
-                                <TableCell className="font-medium">{recarga.type === 'MANUAL' ? rescarga.instrument.user.name : 'FloydPayment'}</TableCell>
+                                <TableCell className="font-medium">{recarga.type === 'MANUAL' ? recarga.instrument.user.name : 'FloydPayment'}</TableCell>
                                 <TableCell>
                                     <div className="flex flex-col">
                                         <span>{recarga.wallet.consumer_id}</span>
