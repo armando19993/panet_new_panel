@@ -16,7 +16,7 @@ export const RecargasPage = () => {
     const [ticketOpen, setTicketOpen] = useState(false);
     const [selectedRecarga, setSelectedRecarga] = useState(null);
     const [editIndex, setEditIndex] = useState(null);
-    const [searchTerm, setSearchTerm] = useState({ wallet: "", status: "" });
+    const [searchTerm, setSearchTerm] = useState({ wallet: "", status: "", user: "" });
     const [isLoading, setIsLoading] = useState(false);
     const [comprobanteOpen, setComprobanteOpen] = useState(false)
     const [formData, setFormData] = useState({
@@ -178,11 +178,14 @@ export const RecargasPage = () => {
 
     const filteredRecargas = recargas.filter((recarga) => {
         const walletId = recarga.wallet?.consumer_id || ""; // Si `wallet` es null, usa una cadena vacía
+        const userName = recarga.type === 'MANUAL' ? recarga.instrument.user.name : 'FloydPayment'; // Nombre del dueño de la cuenta
         const walletMatch = walletId.toLowerCase().includes(searchTerm.wallet.toLowerCase());
+        const userMatch = userName.toLowerCase().includes(searchTerm.user.toLowerCase());
         const statusMatch = !searchTerm.status || recarga.status === searchTerm.status;
 
-        return walletMatch && statusMatch;
+        return walletMatch && userMatch && statusMatch;
     });
+
 
 
 
@@ -197,7 +200,8 @@ export const RecargasPage = () => {
             </div>
 
             {/* Search */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* Filtro por Wallet ID */}
                 <div className="relative w-full">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                     <Input
@@ -208,6 +212,20 @@ export const RecargasPage = () => {
                         onChange={handleSearchChange}
                     />
                 </div>
+
+                {/* Filtro por Dueño de Cuenta */}
+                <div className="relative w-full">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Input
+                        className="pl-10 w-full"
+                        placeholder="Buscar por dueño de cuenta..."
+                        name="user"
+                        value={searchTerm.user}
+                        onChange={handleSearchChange}
+                    />
+                </div>
+
+                {/* Filtro por Estado */}
                 <select
                     name="status"
                     value={searchTerm.status}
@@ -275,12 +293,12 @@ export const RecargasPage = () => {
                                         >
                                             <TicketCheck className="h-4 w-4" />
                                         </Button>
-                                        
+
                                         <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() => handlreComprobante(index)}
-                                        className="h-8 w-8 p-0"
+                                            size="sm"
+                                            variant="ghost"
+                                            onClick={() => handlreComprobante(index)}
+                                            className="h-8 w-8 p-0"
                                         >
                                             <Tag className="h-4 w-4" />
                                         </Button>
