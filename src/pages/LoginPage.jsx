@@ -8,9 +8,10 @@ import { instanceWithToken } from "@/utils/instance";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { Loader2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export function LoginPage() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export function LoginPage() {
       toast.error("Por favor ingrese su usuario y contraseña");
       return;
     }
-    setLoading(true)
+    setLoading(true);
     instanceWithToken
       .post("auth/login", {
         user,
@@ -46,17 +47,17 @@ export function LoginPage() {
       })
       .catch((error) => {
         toast.error("Usuario o contraseña incorrecta");
-        setLoading(false)
+        setLoading(false);
       });
   };
 
   const resetPassword = () => {
-    if(!user){
-      toast.error("Para poder iniciar el proceso de recuperacion escribe tu nombre de usuario")
+    if (!user) {
+      toast.error(
+        "Para poder iniciar el proceso de recuperacion escribe tu nombre de usuario"
+      );
     }
-
-    
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0D0F17]">
@@ -113,10 +114,12 @@ export function LoginPage() {
             Iniciar Sesion
           </Button>
           <div className="mt-4 text-center">
-            <Button onClick={resetPassword} className="text-sm text-teal-500 hover:underline">
-Olvide Mi Contraseña
+            <Button
+              onClick={resetPassword}
+              className="text-sm text-teal-500 hover:underline"
+            >
+              Olvide Mi Contraseña
             </Button>
-
           </div>
         </CardContent>
       </Card>

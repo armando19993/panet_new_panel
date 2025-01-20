@@ -7,8 +7,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { useNavigate } from 'react-router-dom';
+
 
 const TransaccionesPage = () => {
+  const navigate = useNavigate();
+
   const [transactions, setTransactions] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
 
@@ -27,15 +31,11 @@ const TransaccionesPage = () => {
     });
   };
 
-  const formatCurrency = (amount, currency = 'PEN') => {
-    return new Intl.NumberFormat('es-PE', {
-      style: 'currency',
-      currency: currency,
-    }).format(amount);
-  };
+  
 
   const openTransaction = (transaction) => {
     console.log('Abriendo transacción:', transaction);
+    navigate(`/detail-trasaction/${transaction.id}`)
   };
 
   const statusStyles = {
