@@ -113,14 +113,14 @@ export function LoginPage() {
             {loading && <Loader2 className="animate-spin" />}
             Iniciar Sesion
           </Button>
-          <div className="mt-4 text-center">
+          {/* <div className="mt-4 text-center">
             <Button
               onClick={resetPassword}
               className="text-sm text-teal-500 hover:underline"
             >
               Olvide Mi Contraseña
             </Button>
-          </div>
+          </div> */}
         </CardContent>
       </Card>
     </div>
