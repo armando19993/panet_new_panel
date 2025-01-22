@@ -39,9 +39,10 @@ const TransaccionesPage = () => {
   };
 
   const statusStyles = {
-    COMPLETADA: 'bg-green-100 text-green-800 border-green-300',
-    CANCELADA: 'bg-red-100 text-red-800 border-red-300',
-    CREADA: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+    COMPLETADA: 'bg-green-100 text-green-800 border-green-300 hover:bg-green-100/80',
+    CANCELADA: 'bg-red-100 text-red-800 border-red-300 hover:bg-red-100/80',
+    CREADA: 'bg-yellow-100 text-yellow-800 border-yellow-300 hover:bg-yellow-100/80',
+    ANULADA: 'bg-gray-100 text-gray-800 border-gray-300 hover:bg-gray-100/80',
   };
 
   const handleFilter = () => {

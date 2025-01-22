@@ -5,6 +5,8 @@ import { NotebookText, Eye } from "lucide-react";
 import CardComponent from "@/components/globals/CardComponent";
 import LabelLateral from "@/components/globals/LabelLateral";
 import { Button } from "@/components/ui/button";
+import UltimasTransacciones from "@/components/globals/historiales/UltimasTransacciones";
+import UltimasRecargas from "@/components/globals/historiales/UltimasRecargas";
 
 const DetailTransactionPage = () => {
   const { idtrasaction } = useParams();
@@ -13,9 +15,10 @@ const DetailTransactionPage = () => {
   const getTransactions = () => {
     instanceWithToken.get(`transaction/${idtrasaction}`).then((result) => {
       setTransaction(result.data.data);
-      console.log(result.data.data);
     });
   };
+
+  const getLastTen = (items) => (items ? items.slice(0, 10) : []);
 
   useEffect(() => {
     getTransactions();
@@ -176,6 +179,12 @@ const DetailTransactionPage = () => {
             </>
           }
         />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Detalle de transaccion */}
+        <UltimasTransacciones transacciones={transaction.cliente ? transaction.cliente.Transaction : []} />
+        <UltimasRecargas recargas={transaction.recargas ? transaction.cliente.recargas : []} />
       </div>
     </div>
   );
