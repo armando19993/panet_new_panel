@@ -1,22 +1,184 @@
 import { instanceWithToken } from "@/utils/instance";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { NotebookText, Eye } from "lucide-react";
+import CardComponent from "@/components/globals/CardComponent";
+import LabelLateral from "@/components/globals/LabelLateral";
+import { Button } from "@/components/ui/button";
 
 const DetailTransactionPage = () => {
   const { idtrasaction } = useParams();
-  const getTransactions =()=>{
-    instanceWithToken.get(`transaction/${idtrasaction}`)
-    .then((result) => {
-        console.log(result.data.data)
-    })
+  const [transaction, setTransaction] = useState("");
 
-  }
+  const getTransactions = () => {
+    instanceWithToken.get(`transaction/${idtrasaction}`).then((result) => {
+      setTransaction(result.data.data);
+      console.log(result.data.data);
+    });
+  };
 
-  useEffect(()=>{
-    getTransactions()
-  },[])
+  useEffect(() => {
+    getTransactions();
+  }, []);
 
-  return <div>{idtrasaction}</div>;
+  return (
+    <div className="p-3 md:p-6 space-y-4 md:space-y-6 max-w-screen-lg mx-auto">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-2">
+        <div className="flex items-center gap-2">
+          <NotebookText className="h-6 w-6 text-primary" />
+          <h1 className="text-xl md:text-2xl font-bold">
+            Detalle de Transacciones
+          </h1>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Detalle de transaccion */}
+        <CardComponent
+          title={"Transaction"}
+          content={<div className=""></div>}
+        />
+        <CardComponent title={"Creador"} content={<div className=""></div>} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* CARD CLIENTE */}
+        <CardComponent
+          title={"Cliente"}
+          description={"Informacion del Cliente"}
+          content={
+            <>
+              <LabelLateral
+                title={"Numero de Documento"}
+                description={
+                  transaction.cliente
+                    ? transaction.cliente.document
+                    : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Nombre"}
+                description={
+                  transaction.cliente ? transaction.cliente.name : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Telefono"}
+                description={
+                  transaction.cliente ? transaction.cliente.phone : "No Posee"
+                }
+              />
+            </>
+          }
+          contentFooter={
+            <>
+              <Button className="w-[100%]">Editar Cliente</Button>
+            </>
+          }
+        />
+
+        {/* CARD DATOS ORIGEN */}
+        <CardComponent
+          title={"Origen"}
+          description={"Informacion de Transaccion"}
+          content={
+            <>
+              <LabelLateral
+                title={"Pais:"}
+                description={
+                  transaction.origen ? transaction.origen.name : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Monto:"}
+                description={transaction ? transaction.montoOrigen : "No Posee"}
+              />
+              <LabelLateral
+                title={"Moneda:"}
+                description={
+                  transaction ? transaction.monedaOrigen : "No Posee"
+                }
+              />
+            </>
+          }
+        />
+
+        {/* CARD DATOS DESTINO */}
+        <CardComponent
+          title={"Destino"}
+          description={"Informacion de Transaccion"}
+          content={
+            <>
+              <LabelLateral
+                title={"Pais:"}
+                description={
+                  transaction.destino ? transaction.destino.name : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Monto:"}
+                description={
+                  transaction ? transaction.montoDestino : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Moneda:"}
+                description={
+                  transaction ? transaction.monedaDestino : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Tasa:"}
+                description={transaction ? transaction.montoTasa : "No Posee"}
+              />
+            </>
+          }
+        />
+      </div>
+
+      <div className="grid grid-cols-1">
+        {/* CARD DATOS INSTRUMENTO */}
+        <CardComponent
+          title={"Instrumento"}
+          description={"Informacion del Instrumento de Pago"}
+          content={
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <LabelLateral
+                title={"Titular:"}
+                description={
+                  transaction.instrument
+                    ? transaction.instrument.holder
+                    : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Tipo:"}
+                description={
+                  transaction.instrument
+                    ? transaction.instrument.typeInstrument
+                    : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Nro de Cuenta:"}
+                description={
+                  transaction.instrument
+                    ? transaction.instrument.accountNumber
+                    : "No Posee"
+                }
+              />
+            </div>
+          }
+          contentFooter={
+            <>
+              <Button className="w-[100%]">Editar Instrumento</Button>
+            </>
+          }
+        />
+      </div>
+    </div>
+  );
 };
 
 export default DetailTransactionPage;

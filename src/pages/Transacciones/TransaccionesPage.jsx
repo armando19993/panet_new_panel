@@ -135,7 +135,7 @@ const TransaccionesPage = () => {
           <TableHeader>
             <TableRow className="bg-muted/50">
               <TableHead className="min-w-[100px] font-semibold">ID</TableHead>
-              <TableHead className="font-semibold">Creador</TableHead>
+              <TableHead className="font-semibold">CreadorMMM</TableHead>
               <TableHead className="font-semibold">Monto Origen</TableHead>
               <TableHead className="font-semibold">Monto Destino</TableHead>
               <TableHead className="font-semibold">Estado</TableHead>
