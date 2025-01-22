@@ -21,7 +21,14 @@ export function Navigation({ className }) {
 
   const navItems = [
     { icon: LayoutDashboard, label: "Inicio", href: "/home" },
-    { icon: ArrowLeftRight, label: "Transacciones", href: "/transactions" },
+    {
+      icon: ArrowLeftRight,
+      label: 'Transacciones',
+      subItems: [
+        {label: 'Listado de Transacciones', href: '/transactions'},
+        {label: 'Nueva Transaccion', href: '/new-transaction'},
+      ]
+    },
     { icon: ArrowLeftRight, label: "Cola", href: "/cola-espera" },
     { icon: WalletCards, label: "Recargas", href: "/recharges" },
     {

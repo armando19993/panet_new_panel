@@ -14,6 +14,7 @@ import WalletsPage from "@/pages/Wallets/WalletsPage";
 import TransaccionesPage from "@/pages/Transacciones/TransaccionesPage";
 import ColaPage from "@/pages/Transacciones/ColaPage";
 import DetailTransactionPage from "@/pages/Transacciones/DetailTransactionPage";
+import NuevaTransaccion from "@/pages/Transacciones/NuevaTransaccion";
 
 export const MyRoutes = () => {
   return (
@@ -34,6 +35,7 @@ export const MyRoutes = () => {
             <Route path="transactions" element={<TransaccionesPage />} />
             <Route path="cola-espera" element={<ColaPage />} />
             <Route path="detail-trasaction/:idtrasaction" element={<DetailTransactionPage />} />
+            <Route path="new-transaction" element={<NuevaTransaccion />} />
 
           </Route>
         </Route>
