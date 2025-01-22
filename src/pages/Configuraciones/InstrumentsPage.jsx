@@ -169,7 +169,6 @@ export const InstrumentsPage = () => {
     };
 
     const handleEdit = async (index) => {
-        console.log(index)
         setEditIndex(index);
         const instrumentToEdit = instruments[index];
         // Fetch dependent data before setting form data
@@ -220,7 +219,6 @@ export const InstrumentsPage = () => {
 
     const handleChange = (selectedOption) => {
         setSelectedUser(selectedOption.value)
-        console.log("Usuario seleccionado:", selectedOption.value)
     }
 
     return (

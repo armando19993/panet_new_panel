@@ -40,7 +40,6 @@ const ColaPage = () => {
 
   const handleChange = (selectedOption) => {
     setSelectedUser(selectedOption.value)
-    console.log("Usuario seleccionado:", selectedOption.value)
   }
 
   const getCola = async () => {
@@ -85,7 +84,6 @@ const ColaPage = () => {
   };
 
   const transferir = () => {
-    console.log(selectedUser)
     instanceWithToken.post('transaction/transferir', { id: idTT, userId: selectedUser }).then((result) => {
       setModalShow(false)
       toast.success("Transaccion Transferida correctamente")
@@ -97,7 +95,6 @@ const ColaPage = () => {
     instanceWithToken.patch('cola-espera/' + id, {
       status: 'CERRADA'
     }).then((result) => {
-      console.log(result.data.data)
       getCola()
     })
   }

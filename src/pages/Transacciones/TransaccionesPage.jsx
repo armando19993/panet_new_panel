@@ -34,7 +34,6 @@ const TransaccionesPage = () => {
   
 
   const openTransaction = (transaction) => {
-    console.log('Abriendo transacción:', transaction);
     navigate(`/detail-trasaction/${transaction.id}`)
   };
 

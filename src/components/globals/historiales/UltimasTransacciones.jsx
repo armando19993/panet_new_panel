@@ -21,10 +21,6 @@ const UltimasTransacciones = ({ transacciones }) => {
     ANULADA: 'bg-gray-100 text-gray-800 border-gray-300 hover:bg-gray-100/80',
   };
 
-  useEffect(() => {
-    console.log(transacciones)
-  }, [transacciones])
-
   return (
     <CardComponent
       title={"Ultimas Transacciones"}
