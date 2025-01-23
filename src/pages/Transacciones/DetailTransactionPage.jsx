@@ -7,6 +7,7 @@ import LabelLateral from "@/components/globals/LabelLateral";
 import { Button } from "@/components/ui/button";
 import UltimasTransacciones from "@/components/globals/historiales/UltimasTransacciones";
 import UltimasRecargas from "@/components/globals/historiales/UltimasRecargas";
+import { formatDistanceToNow } from 'date-fns';
 
 const DetailTransactionPage = () => {
   const { idtrasaction } = useParams();
@@ -15,7 +16,9 @@ const DetailTransactionPage = () => {
   const getTransactions = () => {
     instanceWithToken.get(`transaction/${idtrasaction}`).then((result) => {
       setTransaction(result.data.data);
+      console.log(result.data.data)
     });
+  
   };
 
   const getLastTen = (items) => (items ? items.slice(0, 10) : []);
@@ -40,12 +43,86 @@ const DetailTransactionPage = () => {
         {/* Detalle de transaccion */}
         <CardComponent
           title={"Transaction"}
-          content={<div className=""></div>}
+          content={<div className="">
+            <LabelLateral
+                title={"Id:"}
+                description={
+                  transaction
+                    ? transaction.id
+                    : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Id Publico:"}
+                description={
+                  transaction.cliente
+                    ? transaction.cliente.publicId
+                    : "No Posee"
+                }
+              />
+              <LabelLateral
+              title={"Fecha Creacion:"}
+              description={
+                transaction ? transaction.createdAt : "No Posee"
+              }
+             />
+            <LabelLateral
+              title={"Fecha Actualizacion:"}
+              description={
+                transaction.instrument ? transaction.instrument.updatedAt : "No Posee"
+              }
+            />
+              <LabelLateral
+                title={"Estatus:"}
+                description={
+                  transaction
+                    ? transaction.status
+                    : "No Posee"
+                }
+              />
+          </div>}
         />
-        <CardComponent title={"Creador"} content={<div className=""></div>} />
+         {/* Detalle de Creador */}
+        <CardComponent 
+        title={"Creador"} 
+        content={
+          <>
+           <LabelLateral
+              title={"Id:"}
+              description={
+                transaction.creador
+                  ? transaction.creador.publicId
+                  : "No Posee"
+              }
+            />
+            <LabelLateral
+              title={"Nombre:"}
+              description={
+                transaction.creador
+                  ? transaction.creador.name
+                  : "No Posee"
+              }
+            />
+            <LabelLateral
+              title={"Usuario:"}
+              description={
+                transaction.creador ? transaction.creador.user : "No Posee"
+              }
+            />
+            <LabelLateral
+              title={"Telefono:"}
+              description={
+                transaction.creador ? transaction.creador.phone : "No Posee"
+              }
+            />
+           
+          </>
+        }
+        />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* CARD CLIENTE */}
         <CardComponent
           title={"Cliente"}
@@ -107,7 +184,11 @@ const DetailTransactionPage = () => {
           }
         />
 
-        {/* CARD DATOS DESTINO */}
+       
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+           {/* CARD DATOS DESTINO */}
         <CardComponent
           title={"Destino"}
           description={"Informacion de Transaccion"}
@@ -138,15 +219,14 @@ const DetailTransactionPage = () => {
             </>
           }
         />
-      </div>
 
-      <div className="grid grid-cols-1">
+
         {/* CARD DATOS INSTRUMENTO */}
         <CardComponent
           title={"Instrumento"}
           description={"Informacion del Instrumento de Pago"}
           content={
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="">
               <LabelLateral
                 title={"Titular:"}
                 description={
@@ -164,10 +244,26 @@ const DetailTransactionPage = () => {
                 }
               />
               <LabelLateral
+                title={"Banco:"}
+                description={
+                  transaction.instrument
+                    ? transaction.instrument.bank.name
+                    : "No Posee"
+                }
+              />
+              <LabelLateral
                 title={"Nro de Cuenta:"}
                 description={
                   transaction.instrument
                     ? transaction.instrument.accountNumber
+                    : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Id Transaccion:"}
+                description={
+                  transaction.instrument
+                    ? transaction.instrument.publicId
                     : "No Posee"
                 }
               />
