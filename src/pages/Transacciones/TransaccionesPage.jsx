@@ -138,7 +138,7 @@ const TransaccionesPage = () => {
               <TableHead className="font-semibold">CreadorMMM</TableHead>
               <TableHead className="font-semibold">Monto Origen</TableHead>
               <TableHead className="font-semibold">Monto Destino</TableHead>
-              <TableHead className="font-semibold">Estado</TableHead>
+              <TableHead className="font-semibold">Estados</TableHead>
               <TableHead className="font-semibold">Fecha</TableHead>
               <TableHead className="min-w-[100px] font-semibold text-center sticky right-0 bg-white">
                 Acciones
