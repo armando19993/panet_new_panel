@@ -25,12 +25,19 @@ export function Navigation({ className }) {
       icon: ArrowLeftRight,
       label: 'Transacciones',
       subItems: [
-        {label: 'Listado de Transacciones', href: '/transactions'},
-        {label: 'Nueva Transaccion', href: '/new-transaction'},
+        { label: 'Listado de Transacciones', href: '/transactions' },
+        { label: 'Nueva Transaccion', href: '/new-transaction' },
       ]
     },
     { icon: ArrowLeftRight, label: "Cola", href: "/cola-espera" },
-    { icon: WalletCards, label: "Recargas", href: "/recharges" },
+    {
+      icon: WalletCards,
+      label: "Recargas",
+      subItems: [
+        { label: 'Listado de Recargas', href: "/recharges" },
+        { label: 'Nueva Recarga', href: '/new-recharge' }
+      ]
+    },
     {
       icon: Cog,
       label: "Configuraciones",
