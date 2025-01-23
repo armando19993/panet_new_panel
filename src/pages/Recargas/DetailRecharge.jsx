@@ -1,9 +1,21 @@
+import { instanceWithToken } from '@/utils/instance';
 import { NotebookText } from 'lucide-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom';
 
 const DetailRecharge = () => {
     const { idrecarga } = useParams();
+
+    const getRecharge = () => {
+        instanceWithToken.get(`recharge/${idrecarga}`).then((result) => {
+            console.log(result.data.data)
+        })
+    }
+
+    useEffect(() => {
+        getRecharge()
+    }, [])
+
     return (
         <div className="p-3 md:p-6 space-y-4 md:space-y-6 max-w-screen-lg mx-auto">
             {/* Header */}

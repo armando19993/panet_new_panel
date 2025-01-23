@@ -9,8 +9,10 @@ import { Wallet, Pencil, Trash2, Plus, Search, Tag, TicketCheck } from "lucide-r
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 export const RecargasPage = () => {
+    const navigate = useNavigate()
     const [recargas, setRecargas] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [ticketOpen, setTicketOpen] = useState(false);
@@ -114,8 +116,7 @@ export const RecargasPage = () => {
     };
 
     const handleViewTicket = (recarga) => {
-        setSelectedRecarga(recarga);
-        setTicketOpen(true);
+        navigate(`/detail-recharge/${recarga.id}`)
     };
 
     const Ticket = ({ recarga }) => {

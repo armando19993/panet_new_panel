@@ -51,13 +51,15 @@ const DetailTransactionPage = () => {
           title={"Transaction"}
           contentFooter={
             <Dialog>
-              <DialogTrigger>Ver Comprobante</DialogTrigger>
+              <DialogTrigger className="w-[100%]">
+                <Button className="w-[100%]">Ver Comprobante</Button>
+              </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Comprobante de Envio</DialogTitle>
                   <DialogDescription>
                     {
-                      transaction.comprobante !== '0' ? <image src={transaction.comprobante} />:"Esta Transaccion aun no tiene Comprobante Asignado"
+                      transaction.comprobante !== '0' ? <img src={transaction.comprobante} className="h-[80vh]" /> : "Esta Transaccion aun no tiene Comprobante Asignado"
                     }
                   </DialogDescription>
                 </DialogHeader>
