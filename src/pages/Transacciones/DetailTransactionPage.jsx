@@ -7,7 +7,8 @@ import LabelLateral from "@/components/globals/LabelLateral";
 import { Button } from "@/components/ui/button";
 import UltimasTransacciones from "@/components/globals/historiales/UltimasTransacciones";
 import UltimasRecargas from "@/components/globals/historiales/UltimasRecargas";
-import { formatDistanceToNow } from 'date-fns';
+import TooltipDate from "@/components/globals/micro/TooltipDate";
+
 
 const DetailTransactionPage = () => {
   const { idtrasaction } = useParams();
@@ -18,10 +19,10 @@ const DetailTransactionPage = () => {
       setTransaction(result.data.data);
       console.log(result.data.data)
     });
-  
+
   };
 
-  const getLastTen = (items) => (items ? items.slice(0, 10) : []);
+
 
   useEffect(() => {
     getTransactions();
@@ -39,89 +40,129 @@ const DetailTransactionPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Detalle de transaccion */}
         <CardComponent
           title={"Transaction"}
           content={<div className="">
             <LabelLateral
-                title={"Id:"}
-                description={
-                  transaction
-                    ? transaction.id
-                    : "No Posee"
-                }
-              />
-              <LabelLateral
-                title={"Id Publico:"}
-                description={
-                  transaction.cliente
-                    ? transaction.cliente.publicId
-                    : "No Posee"
-                }
-              />
-              <LabelLateral
+              title={"Id:"}
+              flexDirection="col"
+              description={
+                transaction
+                  ? transaction.id
+                  : "No Posee"
+              }
+            />
+            <LabelLateral
+              title={"Id Publico:"}
+              description={
+                transaction.cliente
+                  ? transaction.cliente.publicId
+                  : "No Posee"
+              }
+            />
+           <LabelLateral
               title={"Fecha Creacion:"}
               description={
-                transaction ? transaction.createdAt : "No Posee"
+                transaction ? <TooltipDate date={transaction.createdAt} /> : "No Posee"
               }
-             />
+            />
             <LabelLateral
               title={"Fecha Actualizacion:"}
               description={
-                transaction.instrument ? transaction.instrument.updatedAt : "No Posee"
+                transaction ?
+                  <TooltipDate date={transaction.updatedAt} />
+                  : "No Posee"
               }
             />
+            <LabelLateral
+              title={"Estatus:"}
+              description={
+                transaction
+                  ? transaction.status
+                  : "No Posee"
+              }
+            />
+          </div>}
+        />
+        {/* Detalle de Creador */}
+        <CardComponent
+          title={"Creador"}
+          content={
+            <>
               <LabelLateral
-                title={"Estatus:"}
+                title={"Id:"}
                 description={
-                  transaction
-                    ? transaction.status
+                  transaction.creador
+                    ? transaction.creador.publicId
                     : "No Posee"
                 }
               />
-          </div>}
+              <LabelLateral
+                title={"Nombre:"}
+                description={
+                  transaction.creador
+                    ? transaction.creador.name
+                    : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Usuario:"}
+                description={
+                  transaction.creador ? transaction.creador.user : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Telefono:"}
+                description={
+                  transaction.creador ? transaction.creador.phone : "No Posee"
+                }
+              />
+
+            </>
+          }
         />
-         {/* Detalle de Creador */}
-        <CardComponent 
-        title={"Creador"} 
-        content={
-          <>
-           <LabelLateral
-              title={"Id:"}
-              description={
-                transaction.creador
-                  ? transaction.creador.publicId
-                  : "No Posee"
-              }
-            />
-            <LabelLateral
-              title={"Nombre:"}
-              description={
-                transaction.creador
-                  ? transaction.creador.name
-                  : "No Posee"
-              }
-            />
-            <LabelLateral
-              title={"Usuario:"}
-              description={
-                transaction.creador ? transaction.creador.user : "No Posee"
-              }
-            />
-            <LabelLateral
-              title={"Telefono:"}
-              description={
-                transaction.creador ? transaction.creador.phone : "No Posee"
-              }
-            />
-           
-          </>
-        }
+        {/* Detalle de Despachador */}
+        <CardComponent
+          title={"Despachador"}
+          content={
+            <>
+              <LabelLateral
+                title={"Id:"}
+                description={
+                  transaction.despachador
+                    ? transaction.despachador.publicId
+                    : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Nombre:"}
+                description={
+                  transaction.despachador
+                    ? transaction.despachador.name
+                    : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Usuario:"}
+                description={
+                  transaction.despachador ? transaction.despachador.user : "No Posee"
+                }
+              />
+              <LabelLateral
+                title={"Telefono:"}
+                description={
+                  transaction.despachador ? transaction.despachador.phone : "No Posee"
+                }
+              />
+
+            </>
+          }
         />
       </div>
 
-    
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* CARD CLIENTE */}
         <CardComponent
@@ -153,7 +194,7 @@ const DetailTransactionPage = () => {
           }
           contentFooter={
             <>
-              <Button className="w-[100%]">Editar Cliente</Button>
+              <Button className="w-[100%]">Ver Cliente</Button>
             </>
           }
         />
@@ -184,11 +225,11 @@ const DetailTransactionPage = () => {
           }
         />
 
-       
+
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-           {/* CARD DATOS DESTINO */}
+        {/* CARD DATOS DESTINO */}
         <CardComponent
           title={"Destino"}
           description={"Informacion de Transaccion"}
