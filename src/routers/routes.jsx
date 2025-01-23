@@ -15,6 +15,7 @@ import TransaccionesPage from "@/pages/Transacciones/TransaccionesPage";
 import ColaPage from "@/pages/Transacciones/ColaPage";
 import DetailTransactionPage from "@/pages/Transacciones/DetailTransactionPage";
 import NuevaTransaccion from "@/pages/Transacciones/NuevaTransaccion";
+import DetailRecharge from "@/pages/Recargas/DetailRecharge";
 
 export const MyRoutes = () => {
   return (
@@ -35,6 +36,7 @@ export const MyRoutes = () => {
             <Route path="transactions" element={<TransaccionesPage />} />
             <Route path="cola-espera" element={<ColaPage />} />
             <Route path="detail-trasaction/:idtrasaction" element={<DetailTransactionPage />} />
+            <Route path="detail-recharge/:idrecarga" element={<DetailRecharge />} />
             <Route path="new-transaction" element={<NuevaTransaccion />} />
 
           </Route>

@@ -104,12 +104,6 @@ export const RecargasPage = () => {
         setIsOpen(true);
     };
 
-    const handlreComprobante = (index) => {
-        setEditIndex(index);
-        setFormData(recargas[index]);
-        setComprobanteOpen(true);
-    };
-
     const getRecargas = async () => {
         try {
             const result = await instanceWithToken.get("recharge");
@@ -292,15 +286,6 @@ export const RecargasPage = () => {
                                             className="h-8 w-8 p-0"
                                         >
                                             <TicketCheck className="h-4 w-4" />
-                                        </Button>
-
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => handlreComprobante(index)}
-                                            className="h-8 w-8 p-0"
-                                        >
-                                            <Tag className="h-4 w-4" />
                                         </Button>
                                     </div>
 
