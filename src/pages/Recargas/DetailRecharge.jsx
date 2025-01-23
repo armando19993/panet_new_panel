@@ -13,6 +13,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import TooltipDate from "@/components/globals/micro/TooltipDate";
 
 const DetailRecharge = () => {
     const { idrecarga } = useParams();
@@ -94,7 +95,11 @@ const DetailRecharge = () => {
                                     />
                                     <LabelLateral
                                         title={"Fecha del Comprobante:"}
-                                        description={recharge.fecha_comprobante || "No Posee"}
+                                        description= {
+                                            recharge ? (<TooltipDate date={recharge.fecha_comprobante} />):"No Posee"
+                                        }                                  
+                                        
+                                        
                                     />
                                     <LabelLateral
                                         title={"Comentario:"}
