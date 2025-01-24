@@ -319,7 +319,7 @@ const DetailTransactionPage = () => {
                 }
               />
               <LabelLateral
-                title={"Id Transaccion:"}
+                title={"Id Instrumento:"}
                 description={
                   transaction.instrument
                     ? transaction.instrument.publicId

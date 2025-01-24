@@ -136,9 +136,8 @@ const NewRecharge = () => {
                     <SelectItem value={instrumentt.id} key={index}>
                       <div className='flex flex-col'>
                         <LabelLateral title={'Tipo de Instrumento'} flexDirection='col' description={instrumentt.typeInstrument} />
-                        <LabelLateral title={'Tipo de Instrumento'} flexDirection='col' description={instrumentt.typeInstrument} />
-                        <LabelLateral title={'Tipo de Instrumento'} flexDirection='col' description={instrumentt.typeInstrument} />
-                        <LabelLateral title={'Tipo de Instrumento'} flexDirection='col' description={instrumentt.typeInstrument} />
+                        <LabelLateral title={'Nro de Cuenta'} flexDirection='col' description={instrumentt.typeInstrument} />
+                        <LabelLateral title={'Id Instrumento'} flexDirection='col' description={instrumentt.typeInstrument} />
                       </div>
                     </SelectItem>
                   ))}
