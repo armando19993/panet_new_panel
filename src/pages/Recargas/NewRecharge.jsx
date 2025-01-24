@@ -128,7 +128,7 @@ const NewRecharge = () => {
                 </SelectContent>
               </Select>
               <Select >
-                <SelectTrigger className="w-[100%]">
+                <SelectTrigger className="w-[100%] h-[150]">
                   <SelectValue placeholder="Seleccione Cuenta" />
                 </SelectTrigger>
                 <SelectContent>
