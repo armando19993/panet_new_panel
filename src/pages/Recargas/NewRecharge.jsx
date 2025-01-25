@@ -61,16 +61,21 @@ const NewRecharge = () => {
   };
 
   const handleSubmit = () => {
-    if (!amount || !countryId) {
+
+    //aqui debes validar todos los campos
+    if (!amount || !countryId || !bank) {
       alert("Todos los campos, a excepción de la descripción u observación deben ser llenados correctamente!");
       return;
     }
-
+    //aqui agregas los otros valores
     const formData = new FormData();
     formData.append('amount', amount);
     formData.append('countryId', countryId);
     formData.append('bank', bank);
     formData.append('instrument', instrumen);
+    formData.append('fechaComprobante', instrumen);
+    formData.append('referecia', instrumen);
+    formData.append('comentario', instrumen);
     files.forEach(file => {
       formData.append('files', file);
     });
