@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { NotebookText } from "lucide-react";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,56 +16,84 @@ import { instanceWithToken } from '@/utils/instance';
 import { CountryDetail } from '@/components/globals/CountryDetail';
 import LabelLateral from '@/components/globals/LabelLateral';
 
-
 const NewRecharge = () => {
-
-  const [wallets, setWallets] = useState([])
-  const [walletSelect, setWallet] = useState([])
-  const [countryId, setCountryId] = useState("")
-  const [banks, setBanks] = useState([])
+  const [wallets, setWallets] = useState([]);
+  const [walletSelect, setWallet] = useState([]);
+  const [countryId, setCountryId] = useState("");
+  const [banks, setBanks] = useState([]);
   const [bank, setBank] = useState("");
-  const [instrumens, setInstruments] = useState([])
-  const [instrumen, setInstrument] = useState("")
-  const [amount, setAmount] = useState("")
+  const [instrumens, setInstruments] = useState([]);
+  const [instrumen, setInstrument] = useState("");
+  const [amount, setAmount] = useState("");
+  const [files, setFiles] = useState([]);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: 'image/*',
+    onDrop: acceptedFiles => {
+      setFiles(acceptedFiles.map(file => Object.assign(file, {
+        preview: URL.createObjectURL(file)
+      })));
+    }
+  });
 
   const getWallets = () => {
     instanceWithToken.get('/wallet/for-user?type=RECARGA').then((result) => {
-      setWallets(result.data.data)
-    })
-  }
+      setWallets(result.data.data);
+    });
+  };
 
   const getBanks = (countryId) => {
     instanceWithToken.get(`bank?countryId=${countryId}`).then((result) => {
-      setBanks(result.data.data)
-    })
-  }
+      setBanks(result.data.data);
+    });
+  };
 
   const setWall = (id, contryId) => {
-    setWallet(id)
-    setCountryId(contryId)
-    getBanks(contryId)
-  }
+    setWallet(id);
+    setCountryId(contryId);
+    getBanks(contryId);
+  };
 
   const getAccounts = () => {
     instanceWithToken.get(`instruments-client?bankId=${bank}&useInstruments=PANET`).then((result) => {
-      setInstruments(result.data.data)
-      console.log(result.data.data[0])
-    })
-  }
+      setInstruments(result.data.data);
+    });
+  };
 
   const handleSubmit = () => {
     if (!amount || !countryId) {
-      alert("Todos los campos, a exepcion de la descripcion o observacion deben ser llenados correctamente!")
+      alert("Todos los campos, a excepción de la descripción u observación deben ser llenados correctamente!");
+      return;
     }
-  }
+
+    const formData = new FormData();
+    formData.append('amount', amount);
+    formData.append('countryId', countryId);
+    formData.append('bank', bank);
+    formData.append('instrument', instrumen);
+    files.forEach(file => {
+      formData.append('files', file);
+    });
+
+    instanceWithToken.post('/recharge', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }).then(response => {
+      alert('Recarga realizada con éxito!');
+      // Aquí puedes agregar cualquier lógica adicional después de una recarga exitosa
+    }).catch(error => {
+      console.error('Error al realizar la recarga:', error);
+    });
+  };
 
   useEffect(() => {
-    getWallets()
-  }, [])
+    getWallets();
+  }, []);
 
   useEffect(() => {
-    getAccounts()
-  }, [bank])
+    getAccounts();
+  }, [bank]);
 
   return (
     <div className="p-3 md:p-6 space-y-4 md:space-y-6 max-w-screen-lg mx-auto">
@@ -127,7 +156,7 @@ const NewRecharge = () => {
                   ))}
                 </SelectContent>
               </Select>
-              <Select >
+              <Select onValueChange={(value) => setInstrument(value)}>
                 <SelectTrigger className="w-[100%] h-[150]">
                   <SelectValue placeholder="Seleccione Cuenta" />
                 </SelectTrigger>
@@ -136,7 +165,7 @@ const NewRecharge = () => {
                     <SelectItem value={instrumentt.id} key={index}>
                       <div className='flex flex-col'>
                         <LabelLateral title={'Tipo de Instrumento'} flexDirection='col' description={instrumentt.typeInstrument} />
-                    {/*    <LabelLateral title={'Nro de Cuenta'} flexDirection='col' description={instrumentt.accountNumber} />
+                        {/*    <LabelLateral title={'Nro de Cuenta'} flexDirection='col' description={instrumentt.accountNumber} />
                         <LabelLateral title={'Id Instrumento'} flexDirection='col' description={instrumentt.instrument.bank.name} />*/}
                       </div>
 
@@ -144,18 +173,36 @@ const NewRecharge = () => {
                   ))}
                 </SelectContent>
               </Select>
-              <Button onClick={() => handleSubmit()} className='w-full  mt-2'>
+              <div
+                {...getRootProps()}
+                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors mt-2 mb-2"
+              >
+                <input {...getInputProps()} />
+                <p className="text-gray-500">
+                  Arrastra y suelta una imagen aquí, o haz clic para seleccionar una imagen
+                </p>
+                {files.length > 0 && (
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-600">Archivo seleccionado:</p>
+                    <ul>
+                      {files.map((file, index) => (
+                        <li key={index} className="text-sm text-gray-700">
+                          {file.name}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <Button onClick={handleSubmit} className='w-full mt-2'>
                 Recargar
               </Button>
             </div>
           </CardContent>
         </Card>
-      </div >
-
+      </div>
     </div>
+  );
+};
 
-
-  )
-}
-
-export default NewRecharge
+export default NewRecharge;
