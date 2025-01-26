@@ -96,7 +96,7 @@ const NewRecharge = () => {
       }
     }).then(response => {
       toast.success("Recarga Creada con exito!");
-      navigate("/recharges");
+      navigate("/home");
       setLoader(false)
     }).catch(error => {
       toast.error("No se ha podido crear la recarga, intente nuevamente!")

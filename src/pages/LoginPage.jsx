@@ -4,11 +4,10 @@ import { Input } from "@/components/ui/input";
 import logo from "@/assets/logo.png";
 import { useState } from "react";
 import { toast } from "sonner";
-import { instanceWithToken } from "@/utils/instance";
+import { instance } from "@/utils/instance";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { Loader2 } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 
 export function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -22,7 +21,7 @@ export function LoginPage() {
       return;
     }
     setLoading(true);
-    instanceWithToken
+    instance
       .post("auth/login", {
         user,
         password,
