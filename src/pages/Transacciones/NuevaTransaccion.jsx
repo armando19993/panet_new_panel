@@ -19,7 +19,7 @@ const NuevaTransaccion = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 col-span-2/5 gap-4 mt-8">
+      <div className="grid grid-cols-1  md:grid-cols-3 gap-4 mt-8">
              <Card>
                 <CardHeader>
                   <CardTitle>Pais de Origen</CardTitle>

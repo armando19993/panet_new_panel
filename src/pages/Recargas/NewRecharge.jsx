@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { NotebookText } from "lucide-react";
+import { Loader2, NotebookText } from "lucide-react";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,8 +15,12 @@ import {
 import { instanceWithToken } from '@/utils/instance';
 import { CountryDetail } from '@/components/globals/CountryDetail';
 import LabelLateral from '@/components/globals/LabelLateral';
+import { toast } from "sonner";
+import { useNavigate } from 'react-router-dom';
 
 const NewRecharge = () => {
+  const navigate = useNavigate();
+  const [loader, setLoader] = useState(false)
   const [wallets, setWallets] = useState([]);
   const [walletSelect, setWallet] = useState([]);
   const [countryId, setCountryId] = useState("");
@@ -26,9 +30,13 @@ const NewRecharge = () => {
   const [instrumen, setInstrument] = useState("");
   const [amount, setAmount] = useState("");
   const [files, setFiles] = useState([]);
+  const [comentario, setComentario] = useState("");
+  const [referencia, setReferencia] = useState("");
+  const [fechaComprobante, setFechaComprobante] = useState("");
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: 'image/*',
+    maxFiles: 1, // Limita la subida a un solo archivo
     onDrop: acceptedFiles => {
       setFiles(acceptedFiles.map(file => Object.assign(file, {
         preview: URL.createObjectURL(file)
@@ -56,28 +64,30 @@ const NewRecharge = () => {
 
   const getAccounts = () => {
     instanceWithToken.get(`instruments-client?bankId=${bank}&useInstruments=PANET`).then((result) => {
-      setInstruments(result.data.data);
+      if (!result.data.data) {
+        setInstrument([])
+      }
+      else {
+        setInstruments(result.data.data);
+      }
     });
   };
 
   const handleSubmit = () => {
-
-    //aqui debes validar todos los campos
-    if (!amount || !countryId || !bank) {
+    if (!amount || !countryId || !bank || !fechaComprobante || !referencia || !instrumen) {
       alert("Todos los campos, a excepción de la descripción u observación deben ser llenados correctamente!");
       return;
     }
-    //aqui agregas los otros valores
+    setLoader(true)
     const formData = new FormData();
     formData.append('amount', amount);
-    formData.append('countryId', countryId);
-    formData.append('bank', bank);
-    formData.append('instrument', instrumen);
-    formData.append('fechaComprobante', instrumen);
-    formData.append('referecia', instrumen);
-    formData.append('comentario', instrumen);
+    formData.append('walletId', walletSelect);
+    formData.append('instrumentId', instrumen);
+    formData.append('fecha_comprobante', fechaComprobante);
+    formData.append('nro_referencia', referencia);
+    formData.append('comentario', comentario);
     files.forEach(file => {
-      formData.append('files', file);
+      formData.append('comprobante', file);
     });
 
     instanceWithToken.post('/recharge', formData, {
@@ -85,10 +95,12 @@ const NewRecharge = () => {
         'Content-Type': 'multipart/form-data'
       }
     }).then(response => {
-      alert('Recarga realizada con éxito!');
-      // Aquí puedes agregar cualquier lógica adicional después de una recarga exitosa
+      toast.success("Recarga Creada con exito!");
+      navigate("/recharges");
+      setLoader(false)
     }).catch(error => {
-      console.error('Error al realizar la recarga:', error);
+      toast.error("No se ha podido crear la recarga, intente nuevamente!")
+      setLoader(false)
     });
   };
 
@@ -146,11 +158,25 @@ const NewRecharge = () => {
                 className="mb-1"
               />
 
-              <Textarea placeholder="Comentario" className="mb-1" />
+              <Textarea
+                value={comentario}
+                onChange={(e) => setComentario(e.target.value)}
+                placeholder="Comentario" className="mb-1" />
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                <Input placeholder="Referencia" className="mb-1" />
-                <Input placeholder="Fecha" type="date" className="mb-1" />
+                <Input
+                  value={referencia}
+                  onChange={(e) => setReferencia(e.target.value)}
+                  placeholder="Referencia"
+                  className="mb-1" />
+
+                <Input
+                  value={fechaComprobante}
+                  onChange={(e) => setFechaComprobante(e.target.value)}
+                  placeholder="Fecha" type="date"
+                  className="mb-1" />
               </div>
+
               <Select onValueChange={(value) => setBank(value)}>
                 <SelectTrigger className="w-[100%] mb-1">
                   <SelectValue placeholder="Selecione Banco" />
@@ -161,45 +187,68 @@ const NewRecharge = () => {
                   ))}
                 </SelectContent>
               </Select>
+
               <Select onValueChange={(value) => setInstrument(value)}>
                 <SelectTrigger className="w-[100%] h-[150]">
                   <SelectValue placeholder="Seleccione Cuenta" />
                 </SelectTrigger>
                 <SelectContent>
                   {instrumens.map((instrumentt, index) => (
-                    <SelectItem value={instrumentt.id} key={index}>
+                    <SelectItem value={instrumentt?.id} key={index}>
                       <div className='flex flex-col'>
-                        <LabelLateral title={'Tipo de Instrumento'} flexDirection='col' description={instrumentt.typeInstrument} />
-                        {/*    <LabelLateral title={'Nro de Cuenta'} flexDirection='col' description={instrumentt.accountNumber} />
-                        <LabelLateral title={'Id Instrumento'} flexDirection='col' description={instrumentt.instrument.bank.name} />*/}
+                        <LabelLateral
+                          title={'Tipo de Instrumento'}
+                          flexDirection='col'
+                          description={instrumentt?.typeInstrument || "No Posee"}
+                        />
+                        <LabelLateral
+                          title={'Titular:'}
+                          flexDirection='col'
+                          description={instrumentt?.holder || "No Posee"}
+                        />
+                        <LabelLateral
+                          title={'Cuenta:'}
+                          flexDirection='col'
+                          description={instrumentt?.accountNumber || "No Posee"}
+                        />
+                        <LabelLateral
+                          title={'Tipo de Cuenta:'}
+                          flexDirection='col'
+                          description={instrumentt?.accountType?.name || "No Posee"}
+                        />
+                        <LabelLateral
+                          title={'Documento:'}
+                          flexDirection='col'
+                          description={instrumentt?.document || "No Posee"}
+                        />
                       </div>
-
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+
               <div
                 {...getRootProps()}
                 className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors mt-2 mb-2"
               >
                 <input {...getInputProps()} />
-                <p className="text-gray-500">
-                  Arrastra y suelta una imagen aquí, o haz clic para seleccionar una imagen
-                </p>
-                {files.length > 0 && (
+                {files.length === 0 ? (
+                  <p className="text-gray-500">
+                    Arrastra y suelta una imagen aquí, o haz clic para seleccionar una imagen
+                  </p>
+                ) : (
                   <div className="mt-4">
-                    <p className="text-sm text-gray-600">Archivo seleccionado:</p>
-                    <ul>
-                      {files.map((file, index) => (
-                        <li key={index} className="text-sm text-gray-700">
-                          {file.name}
-                        </li>
-                      ))}
-                    </ul>
+                    <img
+                      src={files[0].preview}
+                      alt="Preview"
+                      className="max-w-full h-auto rounded-lg"
+                    />
                   </div>
                 )}
               </div>
-              <Button onClick={handleSubmit} className='w-full mt-2'>
+
+              <Button disabled={loader} onClick={handleSubmit} className='w-full mt-2'>
+                {loader && < Loader2 className="animate-spin" />}
                 Recargar
               </Button>
             </div>
