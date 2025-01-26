@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { NotebookText } from "lucide-react";
+import { CheckCircle, NotebookText, PlusCircle } from "lucide-react";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,7 +26,7 @@ const NuevaTransaccion = () => {
   const [documentClient, setDocumentClient] = useState("")
   const [clientData, setClientData] = useState("")
   const [instruments, setInstruments] = useState([])
-
+  const [instrumentData, setInstrumentData] = useState(null)
   //modales
   const [modalInstrument, setModalInstrument] = useState(false)
   const [createInstrument, setCreateInstrument] = useState(false)
@@ -86,24 +86,19 @@ const NuevaTransaccion = () => {
     })
   }
 
-  const [typesDocuments, setTypesDocuments] = useState([
-    { name: 'Pasaporte', code: 'PASAPORTE' },
-    { name: 'Cedula', code: 'CEDULA' },
-    { name: 'Carnet de Extranjeria', code: 'CARNET DE EXTRANJERIA' },
-    { name: 'Carnet de Refugiado', code: 'CARNET DE REFUGIADO' },
-    { name: 'Cedula de Extranjeria', code: 'CEDULA DE EXTRANJERIA' },
-    { name: 'DNI', code: 'DNI' },
-    { name: 'RUC', code: 'RUC' },
-    { name: 'PTP', code: 'PTP' },
-    { name: 'RIF', code: 'RIF' },
-  ]);
-
   const addInstrument = () => {
-    
+
   }
 
+  const selectInstrument = (instrument) => {
+    setInstrumentData(instrument)
+    setModalInstrument(false)
+    toast.success("Instrumento Seleccionado Correctamente")
+  }
 
-  //Para la funcion de buscar cliente el endpint a consultar sera /client/{documento escrito en el campo}
+  //originId, destinationId, amountSend, amountReceive, tasaId, instrumentId, clientId
+
+
   return (
     <div className="p-3 md:p-6 space-y-4 md:space-y-6 max-w-screen-lg mx-auto">
 
@@ -182,7 +177,8 @@ const NuevaTransaccion = () => {
             {/* No se muestra mientras no haya un cliente */}
             {clientData &&
               <>
-                <div className='grid grid-cols'>
+                <div className='grid grid-cols bg-gray-100 mt-2 mb-2 rounded-lg p-2'>
+                  <LabelLateral title={"Cliente Seleccionado"} />
                   <LabelLateral title={"Nombre:"} description={clientData?.name} />
                   <LabelLateral title={"Telefono:"} description={clientData?.phone} />
                 </div>
@@ -230,10 +226,10 @@ const NuevaTransaccion = () => {
               <TableBody>
                 {instruments.map((instrumentt, index) => (
                   <TableRow key={index}>
-                    <TableCell className="font-medium">{instrumentt.type_method}</TableCell>
-                    <TableCell>{instrumentt.full_name}</TableCell>
-                    <TableCell>{instrumentt.bank_method ? instrumentt.bank_method.name : null}</TableCell>
-                    <TableCell>{instrumentt.id_method}</TableCell>
+                    <TableCell className="font-medium">{instrumentt.typeInstrument}</TableCell>
+                    <TableCell>{instrumentt.holder}</TableCell>
+                    <TableCell>{instrumentt.bank ? instrumentt.bank.name : null}</TableCell>
+                    <TableCell>{instrumentt.accountNumber}</TableCell>
                     <TableCell className="text-right">
                       <CheckCircle onClick={() => selectInstrument(instrumentt)} className="hover:text-green-500" />
                     </TableCell>
@@ -249,7 +245,7 @@ const NuevaTransaccion = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={createClient} onOpenChange={setCreateClient}>
+      {/* <Dialog open={createClient} onOpenChange={setCreateClient}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Crear Cliente</DialogTitle>
@@ -302,126 +298,196 @@ const NuevaTransaccion = () => {
             <Button onClick={store}><SaveIcon /></Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
 
-      <Dialog open={createInstrument} onOpenChange={setCreateInstrument}>
-        <DialogContent>
+      {/* <Dialog open={createInstrument} onOpenChange={setCreateInstrument}>
+        <DialogContent className="w-[95vw] max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>Crear Instrumento</DialogTitle>
+            <DialogTitle>{editIndex !== null ? "Editar Instrumento" : "Agregar Instrumento"}</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Tipo de Documento
+          <div className="grid grid-cols-1 gap-4">
+
+            <Label>
+              Dueño de cuenta:
+              <Select
+                onChange={handleChange}
+                options={users}
+                className="basic-single"
+                classNamePrefix="select"
+                isClearable={true}
+                isSearchable={true}
+                placeholder="Selecciona un usuario..."
+              />
             </Label>
-            <div className="col-span-3">
-              <Select onValueChange={handleChange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Seleccione Tipo de Documento" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Tipos de Documento</SelectLabel>
-                    {cities.map((document, index) => (
-                      <SelectItem key={index} value={document.code}>{document.name}</SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Documento del Titular
+            <Label>
+              País
+              <select
+                name="countryId"
+                value={formData.countryId}
+                onChange={handleInputChange}
+                className="w-full border rounded p-2 focus:outline-none focus:ring"
+              >
+                <option value="">Seleccionar país</option>
+                {countries.map((country) => (
+                  <option key={country.id} value={country.id}>
+                    {country.name}
+                  </option>
+                ))}
+              </select>
             </Label>
-            <Input id="name" value={document} onChange={(event) => setdocument(event.target.value)} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Titular
-            </Label>
-            <Input id="name" value={name} onChange={(event) => setName(event.target.value)} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Correo
-            </Label>
-            <Input id="name" value={email} onChange={(event) => setEmail(event.target.value)} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
+
+            <Label>
               Tipo de Instrumento
+              <select
+                name="typeInstrument"
+                value={formData.typeInstrument}
+                onChange={handleInputChange}
+                className="w-full border rounded p-2 focus:outline-none focus:ring"
+              >
+                {Object.entries(INSTRUMENT_TYPES).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
             </Label>
-            <div className="col-span-3">
-              <Select onValueChange={handleChangeType}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Seleccione Tipo de Instrumento" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Tipos de Instrumentos</SelectLabel>
-                    {type_methods.map((document, index) => (
-                      <SelectItem key={index} value={document.value}>{document.label}</SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          {(type_method === 'Transferencia' || type_method === 'PagoMovil') &&
-            <>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Pais
-                </Label>
-                <div className="col-span-3">
-                  <Select onValueChange={handleChangeCountrie}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Seleccione el Pais" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Paises</SelectLabel>
-                        {countries.map((document, index) => (
-                          <SelectItem key={index} value={document.id}>{document.name}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
+
+            {isLoadingDependencies && formData.countryId && (
+              <div className="flex items-center justify-center p-4">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <span className="ml-2">Cargando datos...</span>
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
+            )}
+
+            {formData.countryId && !isLoadingDependencies && (
+              <>
+                {formData.typeInstrument !== 'PAGO_MOVIL' && (
+                  <Label>
+                    Tipo de Cuenta
+                    <select
+                      name="accountTypeId"
+                      value={formData.accountTypeId}
+                      onChange={handleInputChange}
+                      className="w-full border rounded p-2 focus:outline-none focus:ring"
+                    >
+                      <option value="">Seleccionar tipo de cuenta</option>
+                      {accountTypes.map((type) => (
+                        <option key={type.id} value={type.id}>
+                          {type.name}
+                        </option>
+                      ))}
+                    </select>
+                  </Label>
+                )}
+
+        
+                <Label>
                   Banco
+                  <select
+                    name="bankId"
+                    value={formData.bankId}
+                    onChange={handleInputChange}
+                    className="w-full border rounded p-2 focus:outline-none focus:ring"
+                  >
+                    <option value="">Seleccionar banco</option>
+                    {banks.map((bank) => (
+                      <option key={bank.id} value={bank.id}>
+                        {bank.name}
+                      </option>
+                    ))}
+                  </select>
                 </Label>
-                <div className="col-span-3">
-                  <Select onValueChange={handleChangeBank}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Seleccione Un Banco" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Bancos</SelectLabel>
-                        {banks.map((document, index) => (
-                          <SelectItem key={index} value={document.id}>{document.name}</SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </>
-          }
-          {type_method && <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              {label_method}
-            </Label>
-            <Input id="name" value={id_method} onChange={(event) => setIdMethod(event.target.value)} className="col-span-3" />
-          </div>}
-          <DialogFooter>
-            <Button onClick={storeInstrument}><SaveIcon /></Button>
+
+                {['PAGO_MOVIL', 'BILLETERA_MOVIL', 'CUENTA_BANCARIA'].includes(formData.typeInstrument) && (
+                  <>
+                    <Label>
+                      Documento
+                      <Input
+                        name="document"
+                        value={formData.document}
+                        onChange={handleInputChange}
+                        placeholder="Número de documento"
+                      />
+                    </Label>
+
+                    <Label>
+                      Nombre del Titular
+                      <Input
+                        name="holder"
+                        value={formData.holder}
+                        onChange={handleInputChange}
+                        placeholder="Nombre del titular"
+                      />
+                    </Label>
+                  </>
+                )}
+
+
+                {formData.typeInstrument === 'CUENTA_DIGITAL' && (
+                  <>
+                    <Label>
+                      Nombre del Titular
+                      <Input
+                        name="holder"
+                        value={formData.holder}
+                        onChange={handleInputChange}
+                        placeholder="Nombre del titular"
+                      />
+                    </Label>
+
+
+                  </>
+                )}
+
+                <Label>
+                  {formData.typeInstrument === 'PAGO_MOVIL' ? 'Número de Teléfono' :
+                    formData.typeInstrument === 'BILLETERA_MOVIL' ? 'Número Billetera' :
+                      formData.typeInstrument === 'CUENTA_DIGITAL' ? 'Id de Billetera' :
+                        'Número de Cuenta'}
+                  <Input
+                    name="accountNumber"
+                    value={formData.accountNumber}
+                    onChange={handleInputChange}
+                    placeholder={formData.typeInstrument === 'PAGO_MOVIL' ? 'Número de teléfono' :
+                      formData.typeInstrument === 'BILLETERA_MOVIL' ? 'Número billetera' :
+                        formData.typeInstrument === 'CUENTA_DIGITAL' ? 'Id de billetera' : 'Número de cuenta'}
+                  />
+                </Label>
+
+                <Label>
+                  Ganancia %
+                  <Input
+                    name="profit"
+                    value={formData.profit}
+                    onChange={handleInputChange}
+                    placeholder={'Ganancia %'}
+                  />
+                </Label>
+
+              </>
+            )}
+          </div>
+          <DialogFooter className="mt-4 flex flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsOpen(false);
+                resetForm();
+              }}
+              className="w-full sm:w-auto"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={isLoading || isLoadingDependencies || !formData.countryId}
+              className="w-full sm:w-auto"
+            >
+              {isLoading ? "Guardando..." : editIndex !== null ? "Actualizar" : "Guardar"}
+            </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
 
     </div>
   )
