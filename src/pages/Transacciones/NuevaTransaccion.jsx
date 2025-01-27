@@ -18,8 +18,6 @@ const NuevaTransaccion = () => {
   const [countries, setCountries] = useState([])
   const [destinationId, setDestinationId] = useState("")
   const [originId, setOriginId] = useState(null)
-  const [montoEnviar, setmontoEnviar] = useState("")
-  const [tasaId, setTasaId] = useState("")
   const [tasaAmount, setTasaAmount] = useState("")
   const [amountSend, setAmountSend] = useState("")
   const [amountReceive, setAmountReceive] = useState("")
@@ -97,6 +95,7 @@ const NuevaTransaccion = () => {
   }
 
   //originId, destinationId, amountSend, amountReceive, tasaId, instrumentId, clientId
+  
 
 
   return (
@@ -182,24 +181,65 @@ const NuevaTransaccion = () => {
                   <LabelLateral title={"Nombre:"} description={clientData?.name} />
                   <LabelLateral title={"Telefono:"} description={clientData?.phone} />
                 </div>
-                <Button onClick={() => setModalInstrument(true)} className='w-full  mt-4'>
-                  Seleccionar Instrumento
-                </Button>
+
               </>
             }
-            <Input
-              value={amountSend}
-              onChange={(e) => {
-                setAmountSend(e.target.value)
-              }}
-              placeholder="Monto a Enviar"
-              className="mb-1 mt-2"
 
-            />
-            <Input placeholder="Monto a Recibir" value={amountReceive} dissabled className="mb-1 mt-2 " />
-            <LabelLateral title={"Tasa de Calculo:"} description={tasaAmount} />
+            <div className='mt-4'>
+              {/*CARD  PARA INSTRUMENTO*/}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Instrumento</CardTitle>
+                </CardHeader>
+
+                <CardContent>
+                  <Button onClick={() => setModalInstrument(true)} className='w-full  '>
+                    Seleccionar Instrumento
+                  </Button>
+                  {instrumentData &&
+              <>
+                <div className='grid grid-cols bg-gray-100 mt-2 mb-2 rounded-lg p-2'>
+                  <LabelLateral title={"Instrumento Seleccionado"} />
+                  <LabelLateral title={"Tipo:"} description={instrumentData?.typeInstrument} />
+                  <LabelLateral title={"Nombre:"} description={instrumentData?.holder} />
+                  <LabelLateral title={"Banco:"} description={instrumentData?.bank.name} />
+                  <LabelLateral title={"Identificador:"} description={instrumentData?.accountNumber} />
+                </div>
+
+              </>
+            }
+                </CardContent>
+              </Card>
+            </div>
+
+              {/*CARD PARA MONTOS */}
+            <div className='mt-6'>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Montos</CardTitle>
+                </CardHeader>
+
+                <CardContent>
+                  <Input
+                    value={amountSend}
+                    onChange={(e) => {
+                      setAmountSend(e.target.value)
+                    }}
+                    placeholder="Monto a Enviar"
+                    className="mb-1 mt-2"
+
+                  />
+                  <Input placeholder="Monto a Recibir" value={amountReceive} dissabled className="mb-1 mt-2 " />
+                  <LabelLateral title={"Tasa de Calculo:"} description={tasaAmount} />
+
+                </CardContent>
+              </Card>
+
+            </div>
           </CardContent>
         </Card>
+
+
 
       </div>
 
