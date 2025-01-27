@@ -137,7 +137,6 @@ export const InstrumentsPage = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => {
-            // Reset dependent fields when country changes
             if (name === 'countryId') {
                 return {
                     ...prev,

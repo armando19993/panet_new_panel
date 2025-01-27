@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { CheckCircle, NotebookText, PlusCircle } from "lucide-react";
+import { CheckCircle, Loader2, NotebookText, PlusCircle } from "lucide-react";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,9 +10,17 @@ import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectTrigger, SelectValue } from '@/components/ui/select';
+import CustomSelect from '@/components/globals/micro/CustomSelect';
+import CustomSelect2 from '@/components/globals/micro/CustomSelect2';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
+import { Label } from '@/components/ui/label';
+import ModalInstrument from '@/components/globals/modals/ModalInstrument';
+import Calcular from '@/components/globals/micro/Calcular';
 
 const NuevaTransaccion = () => {
-
+  const navigation = useNavigate()
   const [wallets, setWallets] = useState([])
   const [walletId, setWalletId] = useState("")
   const [countries, setCountries] = useState([])
@@ -22,12 +30,22 @@ const NuevaTransaccion = () => {
   const [amountSend, setAmountSend] = useState("")
   const [amountReceive, setAmountReceive] = useState("")
   const [documentClient, setDocumentClient] = useState("")
+  const [tasaId, setTasaId] = useState(null)
+  const [tasaData, setTasaData] = useState(null)
   const [clientData, setClientData] = useState("")
   const [instruments, setInstruments] = useState([])
   const [instrumentData, setInstrumentData] = useState(null)
+  const [loading, setLoading] = useState(false)
   //modales
   const [modalInstrument, setModalInstrument] = useState(false)
+  const [modalClient, setModalClient] = useState(false)
   const [createInstrument, setCreateInstrument] = useState(false)
+
+  //campos cliente
+  const [name, setName] = useState("")
+  const [document, setDocument] = useState("")
+  const [phone, setPhone] = useState("")
+  const [email, setEmail] = useState("")
 
   const getWallets = () => {
     instanceWithToken.get('/wallet/for-user?type=RECARGA').then((result) => {
@@ -35,9 +53,9 @@ const NuevaTransaccion = () => {
     });
   };
 
-  const setWall = (id, contryId) => {
-    setWalletId(id);
-    setOriginId(contryId)
+  const setWall = (wallet) => {
+    setWalletId(wallet.id);
+    setOriginId(wallet.country.id)
   };
 
   const setcooc = (id) => {
@@ -61,6 +79,8 @@ const NuevaTransaccion = () => {
     if (originId && destinationId) {
       instanceWithToken.get(`/rate?originId=${originId}&destinationId=${destinationId}`).then((result) => {
         setTasaId(result.data.data.id)
+        setTasaData(result.data.data)
+        console.log(result.data.data)
         setTasaAmount(result.data.data.amount)
       })
     }
@@ -69,23 +89,39 @@ const NuevaTransaccion = () => {
   useEffect(() => {
     if (tasaAmount) {
       setAmountReceive(tasaAmount * amountSend)
+      console.log("se esta calculadno")
     }
   }, [amountSend])
 
   const searchClient = () => {
     if (!documentClient) {
-      toast.error("Para poder consultar un cliente debes poner su numero de documento")
-      return
+      toast.error("Para poder consultar un cliente debes poner su número de documento");
+      return;
     }
 
-    instanceWithToken.get(`/client/${documentClient}`).then((result) => {
-      setClientData(result.data.data)
-      setInstruments(result.data.data.instruments)
-    })
-  }
+    instanceWithToken
+      .get(`/client/${documentClient}`)
+      .then((result) => {
+        setClientData(result.data.data);
+        setInstruments(result.data.data.instruments);
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 400) {
+          if (error.response.data.message === "Cliente no existe") {
+            setDocument(documentClient)
+            setModalClient(true);
+            toast.error("Cliente no existe, procede a crearlo");
+          } else {
+            toast.error(error.response.data.message || "Error al buscar el cliente");
+          }
+        } else {
+          toast.error("Error al buscar el cliente");
+        }
+      });
+  };
 
   const addInstrument = () => {
-
+    setCreateInstrument(true)
   }
 
   const selectInstrument = (instrument) => {
@@ -94,10 +130,58 @@ const NuevaTransaccion = () => {
     toast.success("Instrumento Seleccionado Correctamente")
   }
 
-  //originId, destinationId, amountSend, amountReceive, tasaId, instrumentId, clientId
-  
+  const save = () => {
+    const id = Cookies.get("userId")
+    if (!clientData || !instrumentData || !id || !walletId || !tasaId || !originId || !destinationId || !amountSend) {
+      toast.error("Debes completar todos los campos para poder realizar la transaccion")
+      return
+    }
+    setLoading(true)
+    const payload = {
+      clienteId: clientData?.id,
+      instrumentId: instrumentData?.id,
+      creadorId: id,
+      walletId: walletId,
+      rateId: tasaId,
+      origenId: originId,
+      destinoId: destinationId,
+      amount: parseFloat(amountSend),
+    };
 
+    instanceWithToken.post('transaction', payload).then((result) => {
+      toast.success("Transaccion Realizada Correctamente")
+      navigation("/transactions")
+    }).catch((e) => {
+      console.log(e)
+    }).finally(() => {
+      setLoading(false)
+    })
 
+  }
+
+  const storeClient = () => {
+    const payload = { name, document, phone, email }
+    if (!name || !document || !phone) {
+      toast.error("Debes completar todos los campos")
+      return
+    }
+    setLoading(true)
+    instanceWithToken.post('client', payload).then((result) => {
+      setClientData(result.data.data)
+      setModalClient(false)
+      toast.success("Cliente Creado Correctamente")
+    }).catch(() => {
+      toast.error("Error al crear al cliente")
+    }).finally(() => {
+      setLoading(false)
+    })
+  }
+
+  const actualizarInstrumento = (instrument) => {
+    setInstrumentData(instrument)
+    setCreateInstrument(false)
+    setModalInstrument(false)
+  }
   return (
     <div className="p-3 md:p-6 space-y-4 md:space-y-6 max-w-screen-lg mx-auto">
 
@@ -111,31 +195,24 @@ const NuevaTransaccion = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 col-span-2/5 gap-4 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 col-span-2/5 gap-4 mt-8">
+        {/* origen */}
         <Card>
           <CardHeader>
             <CardTitle>Pais de Origen</CardTitle>
           </CardHeader>
 
           <CardContent>
-            {wallets.map((wallet, index) => (
-              <CountryDetail
-                key={index}
-                id={wallet.id}
-                onSelect={setWall}
-                country={wallet.country.name}
-                countryId={wallet.country.id}
-                amount={`${wallet.balance} ${wallet.country.currency}`}
-                abreviation={wallet.country.abbreviation}
-                isActive={walletId === wallet.id}
-              />
-            ))}
+
+            <CustomSelect
+              options={wallets}
+              onSelect={(value) => setWall(value)}
+              selectedValue={wallets.find((wallet) => wallet.id === walletId)}
+            />
           </CardContent>
-
-
         </Card>
 
-
+        {/* destino */}
         <Card>
           <CardHeader>
             <CardTitle>Pais de Destino</CardTitle>
@@ -145,58 +222,55 @@ const NuevaTransaccion = () => {
               Debes Seleccionar un wallet!
             </CardContent> :
             <CardContent>
-              {countries.map((country, index) => (
-                <CountryDetail
-                  key={index}
-                  id={country.id}
-                  onSelect={setcooc}
-                  country={country.name}
-                  countryId={country.id}
-                  abreviation={country.abbreviation}
-                  isActive={destinationId === country.id}
-                />
-              ))}
+
+              <CustomSelect2
+                options={countries}
+                onSelect={(value) => setcooc(value.id)}
+                selectedValue={countries.find((wallet) => wallet.id === destinationId)}
+              />
             </CardContent>
           }
         </Card>
 
+        {/* cliente */}
         <Card>
           <CardHeader>
-            <CardTitle>Transaccion</CardTitle>
+            <CardTitle>Cliente</CardTitle>
+            <CardContent>
+              <Input
+                value={documentClient}
+                onChange={(e) => setDocumentClient(e.target.value)}
+                placeholder="Documento del Cliente"
+                className="mb-1"
+              />
+              <Button className="w-full mt-2" onClick={searchClient}>Consultar Cliente</Button>
+
+              {/* No se muestra mientras no haya un cliente */}
+              {clientData &&
+                <>
+                  <div className='grid grid-cols bg-gray-100 mt-2 mb-2 rounded-lg p-2'>
+                    <LabelLateral title={"Cliente Seleccionado"} />
+                    <LabelLateral title={"Nombre:"} description={clientData?.name} />
+                    <LabelLateral title={"Telefono:"} description={clientData?.phone} />
+                  </div>
+
+                </>
+              }
+            </CardContent>
           </CardHeader>
+        </Card>
+
+        {/* instrumento */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Instrumento</CardTitle>
+          </CardHeader>
+
           <CardContent>
-            <Input
-              value={documentClient}
-              onChange={(e) => setDocumentClient(e.target.value)}
-              placeholder="Documento del Cliente"
-              className="mb-1"
-            />
-            <Button className="w-full" onClick={searchClient}>Consultar Cliente</Button>
-
-            {/* No se muestra mientras no haya un cliente */}
-            {clientData &&
-              <>
-                <div className='grid grid-cols bg-gray-100 mt-2 mb-2 rounded-lg p-2'>
-                  <LabelLateral title={"Cliente Seleccionado"} />
-                  <LabelLateral title={"Nombre:"} description={clientData?.name} />
-                  <LabelLateral title={"Telefono:"} description={clientData?.phone} />
-                </div>
-
-              </>
-            }
-
-            <div className='mt-4'>
-              {/*CARD  PARA INSTRUMENTO*/}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Instrumento</CardTitle>
-                </CardHeader>
-
-                <CardContent>
-                  <Button onClick={() => setModalInstrument(true)} className='w-full  '>
-                    Seleccionar Instrumento
-                  </Button>
-                  {instrumentData &&
+            <Button onClick={() => setModalInstrument(true)} className='w-full  '>
+              Seleccionar Instrumento
+            </Button>
+            {instrumentData &&
               <>
                 <div className='grid grid-cols bg-gray-100 mt-2 mb-2 rounded-lg p-2'>
                   <LabelLateral title={"Instrumento Seleccionado"} />
@@ -208,42 +282,30 @@ const NuevaTransaccion = () => {
 
               </>
             }
-                </CardContent>
-              </Card>
-            </div>
-
-              {/*CARD PARA MONTOS */}
-            <div className='mt-6'>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Montos</CardTitle>
-                </CardHeader>
-
-                <CardContent>
-                  <Input
-                    value={amountSend}
-                    onChange={(e) => {
-                      setAmountSend(e.target.value)
-                    }}
-                    placeholder="Monto a Enviar"
-                    className="mb-1 mt-2"
-
-                  />
-                  <Input placeholder="Monto a Recibir" value={amountReceive} dissabled className="mb-1 mt-2 " />
-                  <LabelLateral title={"Tasa de Calculo:"} description={tasaAmount} />
-
-                </CardContent>
-              </Card>
-
-            </div>
           </CardContent>
         </Card>
 
+        {/* monto */}
+        <Calcular
+          amountSend={amountSend}
+          setAmountSend={setAmountSend}
+          amountReceive={amountReceive}
+          setAmountReceive={setAmountReceive}
+          dataTasa={tasaData}
+        />
 
+        <Card>
+          <CardHeader>
+            <CardTitle>Completar Transaccion</CardTitle>
+          </CardHeader>
 
+          <CardContent>
+            <Button disabled={loading} onClick={save} className="w-full">
+              {loading && <Loader2 className="animate-spin" />}
+              Completar Transaccion</Button>
+          </CardContent>
+        </Card>
       </div>
-
-
 
       <Dialog open={modalInstrument} onOpenChange={setModalInstrument}>
         <DialogContent className="w-full max-w-[70%] md:max-w-[90%]">
@@ -285,250 +347,31 @@ const NuevaTransaccion = () => {
         </DialogContent>
       </Dialog>
 
-      {/* <Dialog open={createClient} onOpenChange={setCreateClient}>
+      <Dialog open={modalClient} onOpenChange={setModalClient}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Crear Cliente</DialogTitle>
+            <DialogTitle>Cree un Cliente</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Tipo de Documento
-            </Label>
-            <div className="col-span-3">
-              <Select onValueChange={handleChange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Seleccione Tipo de Documento" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Tipos de Documento</SelectLabel>
-                    {typesDocuments.map((document, index) => (
-                      <SelectItem key={index} value={document.code}>{document.name}</SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Numero de Documento
-            </Label>
-            <Input id="name" value={document} onChange={(event) => setdocument(event.target.value)} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Nombre
-            </Label>
-            <Input id="name" value={name} onChange={(event) => setName(event.target.value)} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Telefono
-            </Label>
-            <Input id="name" value={phone} onChange={(event) => setPhone(event.target.value)} className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Correo
-            </Label>
-            <Input id="name" value={email} onChange={(event) => setEmail(event.target.value)} className="col-span-3" />
-          </div>
-          <DialogFooter>
-            <Button onClick={store}><SaveIcon /></Button>
-          </DialogFooter>
+          <Label>Nombre del Cliente</Label>
+          <Input value={name} onChange={(e) => setName(e.target.value)} />
+
+          <Label>Documento del Cliente</Label>
+          <Input value={document} onChange={(e) => setDocument(e.target.value)} />
+
+          <Label>Telefono del Cliente</Label>
+          <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+
+          <Label>Correo del Cliente</Label>
+          <Input value={email} onChange={(e) => setEmail(e.target.value)} />
+
+          <Button disabled={loading} onClick={storeClient} className="full">
+            {loading && <Loader2 className="animate-spin" />}
+            Crear Cliente
+          </Button>
         </DialogContent>
-      </Dialog> */}
+      </Dialog>
 
-      {/* <Dialog open={createInstrument} onOpenChange={setCreateInstrument}>
-        <DialogContent className="w-[95vw] max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>{editIndex !== null ? "Editar Instrumento" : "Agregar Instrumento"}</DialogTitle>
-          </DialogHeader>
-          <div className="grid grid-cols-1 gap-4">
-
-            <Label>
-              Dueño de cuenta:
-              <Select
-                onChange={handleChange}
-                options={users}
-                className="basic-single"
-                classNamePrefix="select"
-                isClearable={true}
-                isSearchable={true}
-                placeholder="Selecciona un usuario..."
-              />
-            </Label>
-            <Label>
-              País
-              <select
-                name="countryId"
-                value={formData.countryId}
-                onChange={handleInputChange}
-                className="w-full border rounded p-2 focus:outline-none focus:ring"
-              >
-                <option value="">Seleccionar país</option>
-                {countries.map((country) => (
-                  <option key={country.id} value={country.id}>
-                    {country.name}
-                  </option>
-                ))}
-              </select>
-            </Label>
-
-            <Label>
-              Tipo de Instrumento
-              <select
-                name="typeInstrument"
-                value={formData.typeInstrument}
-                onChange={handleInputChange}
-                className="w-full border rounded p-2 focus:outline-none focus:ring"
-              >
-                {Object.entries(INSTRUMENT_TYPES).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </Label>
-
-            {isLoadingDependencies && formData.countryId && (
-              <div className="flex items-center justify-center p-4">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                <span className="ml-2">Cargando datos...</span>
-              </div>
-            )}
-
-            {formData.countryId && !isLoadingDependencies && (
-              <>
-                {formData.typeInstrument !== 'PAGO_MOVIL' && (
-                  <Label>
-                    Tipo de Cuenta
-                    <select
-                      name="accountTypeId"
-                      value={formData.accountTypeId}
-                      onChange={handleInputChange}
-                      className="w-full border rounded p-2 focus:outline-none focus:ring"
-                    >
-                      <option value="">Seleccionar tipo de cuenta</option>
-                      {accountTypes.map((type) => (
-                        <option key={type.id} value={type.id}>
-                          {type.name}
-                        </option>
-                      ))}
-                    </select>
-                  </Label>
-                )}
-
-        
-                <Label>
-                  Banco
-                  <select
-                    name="bankId"
-                    value={formData.bankId}
-                    onChange={handleInputChange}
-                    className="w-full border rounded p-2 focus:outline-none focus:ring"
-                  >
-                    <option value="">Seleccionar banco</option>
-                    {banks.map((bank) => (
-                      <option key={bank.id} value={bank.id}>
-                        {bank.name}
-                      </option>
-                    ))}
-                  </select>
-                </Label>
-
-                {['PAGO_MOVIL', 'BILLETERA_MOVIL', 'CUENTA_BANCARIA'].includes(formData.typeInstrument) && (
-                  <>
-                    <Label>
-                      Documento
-                      <Input
-                        name="document"
-                        value={formData.document}
-                        onChange={handleInputChange}
-                        placeholder="Número de documento"
-                      />
-                    </Label>
-
-                    <Label>
-                      Nombre del Titular
-                      <Input
-                        name="holder"
-                        value={formData.holder}
-                        onChange={handleInputChange}
-                        placeholder="Nombre del titular"
-                      />
-                    </Label>
-                  </>
-                )}
-
-
-                {formData.typeInstrument === 'CUENTA_DIGITAL' && (
-                  <>
-                    <Label>
-                      Nombre del Titular
-                      <Input
-                        name="holder"
-                        value={formData.holder}
-                        onChange={handleInputChange}
-                        placeholder="Nombre del titular"
-                      />
-                    </Label>
-
-
-                  </>
-                )}
-
-                <Label>
-                  {formData.typeInstrument === 'PAGO_MOVIL' ? 'Número de Teléfono' :
-                    formData.typeInstrument === 'BILLETERA_MOVIL' ? 'Número Billetera' :
-                      formData.typeInstrument === 'CUENTA_DIGITAL' ? 'Id de Billetera' :
-                        'Número de Cuenta'}
-                  <Input
-                    name="accountNumber"
-                    value={formData.accountNumber}
-                    onChange={handleInputChange}
-                    placeholder={formData.typeInstrument === 'PAGO_MOVIL' ? 'Número de teléfono' :
-                      formData.typeInstrument === 'BILLETERA_MOVIL' ? 'Número billetera' :
-                        formData.typeInstrument === 'CUENTA_DIGITAL' ? 'Id de billetera' : 'Número de cuenta'}
-                  />
-                </Label>
-
-                <Label>
-                  Ganancia %
-                  <Input
-                    name="profit"
-                    value={formData.profit}
-                    onChange={handleInputChange}
-                    placeholder={'Ganancia %'}
-                  />
-                </Label>
-
-              </>
-            )}
-          </div>
-          <DialogFooter className="mt-4 flex flex-col sm:flex-row gap-2">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsOpen(false);
-                resetForm();
-              }}
-              className="w-full sm:w-auto"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={isLoading || isLoadingDependencies || !formData.countryId}
-              className="w-full sm:w-auto"
-            >
-              {isLoading ? "Guardando..." : editIndex !== null ? "Actualizar" : "Guardar"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog> */}
-
+      <ModalInstrument clientId={clientData.id} isOpen={createInstrument} setIsOpen={actualizarInstrumento} />
     </div>
   )
 }
