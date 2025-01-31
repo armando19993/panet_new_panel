@@ -10,37 +10,37 @@ import { default as SelectAutomatic } from 'react-select';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 
-
 const ColaPage = () => {
   const [cola, setCola] = useState([]);
   const [filteredCola, setFilteredCola] = useState([]);
-  const [modalShow, setModalShow] = useState(false)
-  const [tipoT, setTipoT] = useState(null)
-  const [idT, setIdT] = useState(null)
-  const [idTT, setIdTT] = useState(null)
-  const [users, setUsers] = useState([])
-  const [selectedUser, setSelectedUser] = useState(null)
+  const [modalShow, setModalShow] = useState(false);
+  const [tipoT, setTipoT] = useState(null);
+  const [idT, setIdT] = useState(null);
+  const [idTT, setIdTT] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [filters, setFilters] = useState({
     status: '',
-    type: ''
+    type: '',
+    encargado: '',
+    publicId: ''
   });
-
 
   const getUsers = () => {
     instanceWithToken.get('/user/by-roles/shearch?roles=DESPACHADOR').then((result) => {
-      let users = []
+      let users = [];
 
       result.data.data.map((user) => {
-        users.push({ label: `${user.user} - ${user.name}`, value: user.id })
-      })
+        users.push({ label: `${user.user} - ${user.name}`, value: user.id });
+      });
 
-      setUsers(users)
-    })
-  }
+      setUsers(users);
+    });
+  };
 
   const handleChange = (selectedOption) => {
-    setSelectedUser(selectedOption.value)
-  }
+    setSelectedUser(selectedOption.value);
+  };
 
   const getCola = async () => {
     try {
@@ -63,12 +63,23 @@ const ColaPage = () => {
       filtered = filtered.filter(item => item.type === filters.type);
     }
 
+    if (filters.encargado) {
+      filtered = filtered.filter(item => item.user.name.toLowerCase().includes(filters.encargado.toLowerCase()));
+    }
+
+    if (filters.publicId) {
+      filtered = filtered.filter(item => {
+        const publicId = item.recharge ? 'REC-2025-' + item.recharge.publicId : 'TRX-2025-' + item.transaction.publicId;
+        return publicId.toLowerCase().includes(filters.publicId.toLowerCase());
+      });
+    }
+
     setFilteredCola(filtered);
   };
 
   const handleFilterChange = (value, filterType) => {
-    if (value == 'ALL') {
-      value = ''
+    if (value === 'ALL') {
+      value = '';
     }
     setFilters(prev => ({
       ...prev,
@@ -80,28 +91,28 @@ const ColaPage = () => {
     setTipoT(tipo);
     setIdT(publicId);
     setIdTT(id);
-    setModalShow(true); // Actualizar para mostrar el modal
+    setModalShow(true);
   };
 
   const transferir = () => {
     instanceWithToken.post('transaction/transferir', { id: idTT, userId: selectedUser }).then((result) => {
-      setModalShow(false)
-      toast.success("Transaccion Transferida correctamente")
-      getCola()
-    })
-  }
+      setModalShow(false);
+      toast.success("Transacción transferida correctamente");
+      getCola();
+    });
+  };
 
   const eliminarTransaccion = (id) => {
     instanceWithToken.patch('cola-espera/' + id, {
       status: 'CERRADA'
     }).then((result) => {
-      getCola()
-    })
-  }
+      getCola();
+    });
+  };
 
   useEffect(() => {
     getCola();
-    getUsers()
+    getUsers();
   }, []);
 
   useEffect(() => {
@@ -139,8 +150,8 @@ const ColaPage = () => {
         <CardHeader>
           <CardTitle>Filtros</CardTitle>
         </CardHeader>
-        <CardContent className="flex gap-4">
-          <Select onValueChange={(value) => handleFilterChange(value, 'type')} className="w-[100%]">
+        <CardContent className="flex gap-4 flex-wrap">
+          <Select onValueChange={(value) => handleFilterChange(value, 'type')} className="w-[100%] md:w-[48%]">
             <SelectTrigger className="w-[100%]">
               <SelectValue placeholder="Tipo" />
             </SelectTrigger>
@@ -151,6 +162,19 @@ const ColaPage = () => {
             </SelectContent>
           </Select>
 
+          <input
+            type="text"
+            placeholder="Filtrar por Encargado"
+            className="w-[100%] md:w-[48%] p-2 border rounded"
+            onChange={(e) => handleFilterChange(e.target.value, 'encargado')}
+          />
+
+          <input
+            type="text"
+            placeholder="Filtrar por Public ID"
+            className="w-[100%] md:w-[48%] p-2 border rounded"
+            onChange={(e) => handleFilterChange(e.target.value, 'publicId')}
+          />
         </CardContent>
       </Card>
 
@@ -201,7 +225,7 @@ const ColaPage = () => {
       <Dialog open={modalShow} onOpenChange={setModalShow}>
         <DialogContent className="w-[95vw] max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>Transferir Transaccion: {tipoT}-{idT}</DialogTitle>
+            <DialogTitle>Transferir Transacción: {tipoT}-{idT}</DialogTitle>
           </DialogHeader>
 
           <Label className="mt-5 mb-5">
@@ -217,7 +241,7 @@ const ColaPage = () => {
             />
           </Label>
 
-          <Button onClick={() => { transferir() }} >Porcesar Transferencia</Button>
+          <Button onClick={() => { transferir() }} >Procesar Transferencia</Button>
         </DialogContent>
       </Dialog>
     </div>
