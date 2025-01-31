@@ -220,11 +220,12 @@ const RecharguesTransaccions = () => {
       { condition: !destinationId, message: "Estimado Usuario, No ha seleccionado un Wallet Destino!" },
       { condition: !referencia, message: "Estimado Usuario, No ha ingresado una Referencia!" },
       { condition: !fechaComprobante, message: "Estimado Usuario, No ha ingresado una Fecha de Comprobante!" },
-      { condition: !document, message: "Estimado Usuario, No ha ingresado un Documento!" },
       { condition: !bank, message: "Estimado Usuario, No ha seleccionado un Banco!" },
-      { condition: !instrumen, message: "Estimado Usuario, No ha seleccionado un Instrumento!" },
-      { condition: !documentClient, message: "Estimado Usuario, No ha ingresado Datos del Cliente!" },
-      { condition: !instrumentsT, message: "Estimado Usuario, No ha ingresado Datos del Instrumento de la Transaccion!" }
+      { condition: !instrumen, message: "Estimado Usuario, No ha seleccionado una Cuenta!" },
+      { condition: !files[0], message: "Estimado Usuario, No ha ingresado imagen del Comprobante!" },
+      { condition: !amountSend, message: "Estimado Usuario, No ha ingresado el Monto de Envio!" },
+      { condition: !clientData, message: "Estimado Usuario, No ha ingresado el Documento del Cliente!" },
+      { condition: !instrumentData, message: "Estimado Usuario, No ha ingresado Datos del Instrumento de la Transaccion!" }
     ];
     
     for (const validation of validations) {
