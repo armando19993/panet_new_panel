@@ -217,8 +217,7 @@ const RecharguesTransaccions = () => {
     //TODO: Validar campo por campo
     const validations = [
       { condition: !walletSelect, message: "Estimado Usuario, No ha seleccionado un wallet de origen!" },
-      { condition: !walletId, message: "Estimado Usuario, No ha seleccionado un Wallet Destino!" },
-      { condition: !comentario, message: "Estimado Usuario, No ha ingresado un Comentario!" },
+      { condition: !destinationId, message: "Estimado Usuario, No ha seleccionado un Wallet Destino!" },
       { condition: !referencia, message: "Estimado Usuario, No ha ingresado una Referencia!" },
       { condition: !fechaComprobante, message: "Estimado Usuario, No ha ingresado una Fecha de Comprobante!" },
       { condition: !document, message: "Estimado Usuario, No ha ingresado un Documento!" },
