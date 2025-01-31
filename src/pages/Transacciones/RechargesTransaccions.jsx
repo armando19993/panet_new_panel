@@ -60,7 +60,7 @@ const RecharguesTransaccions = () => {
   const [document, setDocument] = useState("")
   const [phone, setPhone] = useState("")
   const [email, setEmail] = useState("")
-
+ 
   //MODALES
   const [modalClient, setModalClient] = useState(false)
   const [modalInstrument, setModalInstrument] = useState(false)
@@ -171,7 +171,7 @@ const RecharguesTransaccions = () => {
     })
   }
 
-  {/*/****************************************************************** */ }
+
   const { getRootProps, getInputProps } = useDropzone({
     accept: 'image/*',
     maxFiles: 1, // Limita la subida a un solo archivo
@@ -215,9 +215,26 @@ const RecharguesTransaccions = () => {
   const handleSubmit = () => {
     console.log(walletSelect)
     //TODO: Validar campo por campo
-    if (!walletSelect) {
-      alert("Estimado Usuario, No ha seleccionado un wallet de origen!")
+    const validations = [
+      { condition: !walletSelect, message: "Estimado Usuario, No ha seleccionado un wallet de origen!" },
+      { condition: !walletId, message: "Estimado Usuario, No ha seleccionado un Wallet Destino!" },
+      { condition: !comentario, message: "Estimado Usuario, No ha ingresado un Comentario!" },
+      { condition: !referencia, message: "Estimado Usuario, No ha ingresado una Referencia!" },
+      { condition: !fechaComprobante, message: "Estimado Usuario, No ha ingresado una Fecha de Comprobante!" },
+      { condition: !document, message: "Estimado Usuario, No ha ingresado un Documento!" },
+      { condition: !bank, message: "Estimado Usuario, No ha seleccionado un Banco!" },
+      { condition: !instrumen, message: "Estimado Usuario, No ha seleccionado un Instrumento!" },
+      { condition: !documentClient, message: "Estimado Usuario, No ha ingresado Datos del Cliente!" },
+      { condition: !instrumentsT, message: "Estimado Usuario, No ha ingresado Datos del Instrumento de la Transaccion!" }
+    ];
+    
+    for (const validation of validations) {
+      if (validation.condition) {
+        alert(validation.message);
+        break; // Detiene el bucle al encontrar el primer error
+      }
     }
+     
 
     // const id = Cookies.get("userId")
     // console.log({ countryId, bank, fechaComprobante, referencia, instrumen, clientData, instrumentData, id, walletId, tasaId, originId, destinationId, amountSend })
