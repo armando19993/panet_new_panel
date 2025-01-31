@@ -74,6 +74,7 @@ const NewRecharge = () => {
   };
 
   const handleSubmit = () => {
+    //TODO: Validar campo por campo
     if (!amount || !countryId || !bank || !fechaComprobante || !referencia || !instrumen) {
       alert("Todos los campos, a excepción de la descripción u observación deben ser llenados correctamente!");
       return;

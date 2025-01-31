@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { CheckCircle, Loader2, NotebookText, PlusCircle } from "lucide-react";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
@@ -23,22 +23,19 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
-import CustomSelect from '@/components/globals/micro/CustomSelect';
-import CustomSelect2 from '@/components/globals/micro/CustomSelect2';
-
+import Cookies from 'js-cookie'
+import CustomSelect3 from '@/components/globals/micro/CustomSelect3';
 
 const RecharguesTransaccions = () => {
 
   const navigate = useNavigate();
-  const [loader, setLoader] = useState(false)
   const [wallets, setWallets] = useState([]);
-  const [walletSelect, setWallet] = useState([]);
+  const [walletSelect, setWallet] = useState(null);
   const [countryId, setCountryId] = useState("");
   const [banks, setBanks] = useState([]);
   const [bank, setBank] = useState("");
   const [instrumens, setInstruments] = useState([]);
   const [instrumen, setInstrument] = useState("");
-  const [amount, setAmount] = useState("");
   const [files, setFiles] = useState([]);
   const [comentario, setComentario] = useState("");
   const [referencia, setReferencia] = useState("");
@@ -122,15 +119,9 @@ const RecharguesTransaccions = () => {
     });
   };
 
-  const setWallT = (wallet) => {
-    setWalletId(wallet.id);
-    setOriginId(wallet.country.id);
-  };
-
   const setcooc = (id) => {
     setDestinationId(id);
   };
-
 
   useEffect(() => {
     getWalletsT()
@@ -179,41 +170,6 @@ const RecharguesTransaccions = () => {
       setLoading(false)
     })
   }
- 
-  const save = () => {
-    const id = Cookies.get("userId")
-    if (!clientData || !instrumentData || !id || !walletId || !tasaId || !originId || !destinationId || !amountSend) {
-      toast.error("Debes completar todos los campos para poder realizar la transaccion")
-      return
-    }
-    setLoading(true)
-    const payload = {
-      clienteId: clientData?.id,
-      instrumentId: instrumentData?.id,
-      creadorId: id,
-      walletId: walletId,
-      rateId: tasaId,
-      origenId: originId,
-      destinoId: destinationId,
-      amount: parseFloat(amountSend),
-    };
-
-    instanceWithToken.post('transaction', payload).then((result) => {
-      toast.success("Transaccion Realizada Correctamente")
-      navigation("/transactions")
-    }).catch((e) => {
-      console.log(e)
-    }).finally(() => {
-      setLoading(false)
-    })
-
-  }
-
-
- 
-  
-
-
 
   {/*/****************************************************************** */ }
   const { getRootProps, getInputProps } = useDropzone({
@@ -238,9 +194,10 @@ const RecharguesTransaccions = () => {
     });
   };
 
-  const setWall = (id, contryId) => {
+  const setWalf = (id, contryId) => {
     setWallet(id);
     setCountryId(contryId);
+    setOriginId(contryId)
     getBanks(contryId);
   };
 
@@ -256,34 +213,53 @@ const RecharguesTransaccions = () => {
   };
 
   const handleSubmit = () => {
-    if (!amount || !countryId || !bank || !fechaComprobante || !referencia || !instrumen) {
-      alert("Todos los campos, a excepción de la descripción u observación deben ser llenados correctamente!");
-      return;
+    console.log(walletSelect)
+    //TODO: Validar campo por campo
+    if (!walletSelect) {
+      alert("Estimado Usuario, No ha seleccionado un wallet de origen!")
     }
-    setLoader(true)
-    const formData = new FormData();
-    formData.append('amount', amount);
-    formData.append('walletId', walletSelect);
-    formData.append('instrumentId', instrumen);
-    formData.append('fecha_comprobante', fechaComprobante);
-    formData.append('nro_referencia', referencia);
-    formData.append('comentario', comentario);
-    files.forEach(file => {
-      formData.append('comprobante', file);
-    });
 
-    instanceWithToken.post('/recharge', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    }).then(response => {
-      toast.success("Recarga Creada con exito!");
-      navigate("/home");
-      setLoader(false)
-    }).catch(error => {
-      toast.error("No se ha podido crear la recarga, intente nuevamente!")
-      setLoader(false)
-    });
+    // const id = Cookies.get("userId")
+    // console.log({ countryId, bank, fechaComprobante, referencia, instrumen, clientData, instrumentData, id, walletId, tasaId, originId, destinationId, amountSend })
+
+    // if (!countryId || !bank || !fechaComprobante || !referencia || !instrumen || !clientData || !instrumentData || !id || !walletId || !tasaId || !originId || !destinationId || !amountSend) {
+    //   alert("Todos los campos, a excepción de la descripción u observación deben ser llenados correctamente!");
+    //   return;
+    // }
+    // setLoading(true)
+
+    // const formData = new FormData();
+    // formData.append('walletId', walletSelect);
+    // formData.append('instrumentId', instrumen);
+    // formData.append('fecha_comprobante', fechaComprobante);
+    // formData.append('nro_referencia', referencia);
+    // formData.append('comentario', comentario);
+    // formData.append('clienteId', clientData?.id)
+    // formData.append('instrumentId', instrumentData?.id)
+    // formData.append('creadorId', id)
+    // formData.append('walletId', walletId)
+    // formData.append('rateId', tasaId)
+    // formData.append('origenId', originId)
+    // formData.append('destinoId', destinationId)
+    // formData.append('amount', parseFloat(amountSend))
+    // files.forEach(file => {
+    //   formData.append('comprobante', file);
+    // });
+
+    // instanceWithToken.post('/recharge/transaction/full', formData, {
+    //   headers: {
+    //     'Content-Type': 'multipart/form-data'
+    //   }
+    // }).then(response => {
+    //   toast.success("Recarga Creada con exito!");
+    //   //navigate("/home");
+    //   setLoading(false)
+    // }).catch(error => {
+    //   toast.error("No se ha podido crear la recarga, intente nuevamente!")
+    //   setLoading(false)
+    // }).finally(() => {
+    //   setLoading(false)
+    // })
   };
 
   useEffect(() => {
@@ -300,7 +276,7 @@ const RecharguesTransaccions = () => {
         <div className="flex items-center gap-2">
           <NotebookText className="h-6 w-6 text-primary" />
           <h1 className="text-xl md:text-2xl font-bold">
-            Nueva Recarga
+            Transaccion Completa
           </h1>
         </div>
       </div>
@@ -316,7 +292,7 @@ const RecharguesTransaccions = () => {
               <CountryDetail
                 key={index}
                 id={wallet.id}
-                onSelect={setWall}
+                onSelect={setWalf}
                 country={wallet.country.name}
                 countryId={wallet.country.id}
                 amount={`${wallet.balance} ${wallet.country.currency}`}
@@ -327,19 +303,32 @@ const RecharguesTransaccions = () => {
           </CardContent>
         </Card>
 
+        {/*DESTINO */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Pais de Destino</CardTitle>
+          </CardHeader>
+
+          {!walletSelect ?
+            <CardContent>
+              Debes Seleccionar un wallet!
+            </CardContent> :
+            <CardContent>
+              <CustomSelect3
+                options={countries}
+                onSelect={(value) => setDestinationId(value)}
+                selectedValue={countries.find((wallet) => wallet.id === destinationId)}
+              />
+            </CardContent>
+          }
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Datos de la Recarga</CardTitle>
           </CardHeader>
           <CardContent>
             <div className='gap-2'>
-              <Input
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="Monto a Recargar"
-                className="mb-1"
-              />
-
               <Textarea
                 value={comentario}
                 onChange={(e) => setComentario(e.target.value)}
@@ -433,43 +422,21 @@ const RecharguesTransaccions = () => {
           </CardContent>
         </Card>
 
+        {/* monto */}
+        <Calcular
+          modo2={true}
+          amountSend={amountSend}
+          setAmountSend={setAmountSend}
+          amountReceive={amountReceive}
+          setAmountReceive={setAmountReceive}
+          dataTasa={tasaData}
+        />
       </div>
 
-
-
-      <div> {/* TRANSACCION */}
-
-        <div className="flex items-center gap-2">
-          <NotebookText className="h-6 w-6 text-primary" />
-          <h1 className="text-xl md:text-2xl font-bold">
-            Nueva Transaccion
-          </h1>
-        </div>
-
+      <div>
         <div >
           {/**MAIN */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-       
-            
-            {/*DESTINO */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Pais de Destino</CardTitle>
-              </CardHeader>
-
-              {!originId ?
-                <CardContent>
-                  Debes Seleccionar un wallet!
-                </CardContent> :
-                <CardContent>
-                  <CustomSelect2
-                    options={countries}
-                    onSelect={(value) => setcooc(value.id)}
-                    selectedValue={countries.find((wallet) => wallet.id === destinationId)}
-                  />
-                </CardContent>
-              }
-            </Card>
             {/*CLIENTE*/}
             <Card>
               <CardHeader>
@@ -521,23 +488,13 @@ const RecharguesTransaccions = () => {
               </CardContent>
             </Card>
 
-            {/* monto */}
-            <Calcular
-              amountSend={amountSend}
-              setAmountSend={setAmountSend}
-              amountReceive={amountReceive}
-              setAmountReceive={setAmountReceive}
-              dataTasa={tasaData}
-            />
+
             {/* ENVIAR TRANSACCION */}
             <div className='col-span-2 gap-4'>
-                <Button disabled={loading} onClick={save} className="w-full">
-                  {loading && <Loader2 className="animate-spin" />}
-                  Completar Transaccion</Button>
-                </div>
-
-           
-
+              <Button disabled={loading} onClick={handleSubmit} className="w-full">
+                {loading && <Loader2 className="animate-spin" />}
+                Completar Transaccion</Button>
+            </div>
           </div>
 
 
@@ -606,10 +563,7 @@ const RecharguesTransaccions = () => {
           </Dialog>
 
           <ModalInstrument clientId={clientData.id} isOpen={createInstrument} setIsOpen={actualizarInstrumento} />
-
-
         </div>
-
       </div>
     </div>
 

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { CountryDetail } from '../CountryDetail';
 
-const CustomSelect2 = ({ options, onSelect, selectedValue }) => {
+const CustomSelect3 = ({ options, onSelect, selectedValue }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSelect = (value) => {
-    onSelect(value);
+    onSelect(value.id);
     setIsOpen(false);
   };
 
@@ -45,4 +45,4 @@ const CustomSelect2 = ({ options, onSelect, selectedValue }) => {
   );
 };
 
-export default CustomSelect2;
+export default CustomSelect3;

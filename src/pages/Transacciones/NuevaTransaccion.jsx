@@ -131,6 +131,7 @@ const NuevaTransaccion = () => {
   }
 
   const save = () => {
+    //TODO: Validacion campo por campo
     const id = Cookies.get("userId")
     if (!clientData || !instrumentData || !id || !walletId || !tasaId || !originId || !destinationId || !amountSend) {
       toast.error("Debes completar todos los campos para poder realizar la transaccion")

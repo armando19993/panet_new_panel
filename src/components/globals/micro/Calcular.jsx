@@ -10,6 +10,7 @@ const Calcular = ({
   amountReceive,
   setAmountReceive,
   dataTasa,
+  modo2 = null
 }) => {
   const [calculationDirection, setCalculationDirection] = useState('send-to-receive'); // Dirección del cálculo
 
@@ -74,7 +75,7 @@ const Calcular = ({
       </CardHeader>
 
       <CardContent>
-        <Label>Monto a Enviar</Label>
+        <Label>Monto a Enviar {modo2 && '(Monto de Recarga)'}</Label>
         <Input
           value={amountSend}
           onChange={(e) => {
