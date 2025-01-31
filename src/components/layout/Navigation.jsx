@@ -27,6 +27,7 @@ export function Navigation({ className }) {
       subItems: [
         { label: 'Listado de Transacciones', href: '/transactions' },
         { label: 'Nueva Transaccion', href: '/new-transaction' },
+        { label: 'Trasaccion Completa', href: '/recharges-transaccions' },
       ]
     },
     { icon: ArrowLeftRight, label: "Cola", href: "/cola-espera" },
@@ -62,6 +63,7 @@ export function Navigation({ className }) {
   };
 
   return (
+    
     <div className={`bg-gray-100 p-6 h-full border-r border-gray-300 ${className}`}>
       <div className="flex items-center gap-2 mb-8">
         <img
@@ -111,6 +113,8 @@ export function Navigation({ className }) {
           </div>
         ))}
       </nav>
+
     </div>
+
   );
 }
