@@ -60,7 +60,7 @@ const RecharguesTransaccions = () => {
   const [document, setDocument] = useState("")
   const [phone, setPhone] = useState("")
   const [email, setEmail] = useState("")
- 
+
   //MODALES
   const [modalClient, setModalClient] = useState(false)
   const [modalInstrument, setModalInstrument] = useState(false)
@@ -227,56 +227,47 @@ const RecharguesTransaccions = () => {
       { condition: !clientData, message: "Estimado Usuario, No ha ingresado el Documento del Cliente!" },
       { condition: !instrumentData, message: "Estimado Usuario, No ha ingresado Datos del Instrumento de la Transaccion!" }
     ];
-    
+
     for (const validation of validations) {
       if (validation.condition) {
         alert(validation.message);
-        break; // Detiene el bucle al encontrar el primer error
+        return
       }
     }
-     
 
-    // const id = Cookies.get("userId")
-    // console.log({ countryId, bank, fechaComprobante, referencia, instrumen, clientData, instrumentData, id, walletId, tasaId, originId, destinationId, amountSend })
+    const id = Cookies.get("userId")
+    setLoading(true)
 
-    // if (!countryId || !bank || !fechaComprobante || !referencia || !instrumen || !clientData || !instrumentData || !id || !walletId || !tasaId || !originId || !destinationId || !amountSend) {
-    //   alert("Todos los campos, a excepción de la descripción u observación deben ser llenados correctamente!");
-    //   return;
-    // }
-    // setLoading(true)
+    const formData = new FormData();
+    formData.append('walletId', walletSelect);
+    formData.append('montoOrigen', parseFloat(amountSend))
+    formData.append('comentario', comentario);
+    formData.append('fecha_comprobante', fechaComprobante);
+    formData.append('nro_referencia', referencia);
+    formData.append('instrumentId', instrumen)
+    formData.append('clienteId', clientData?.id)
+    formData.append('instrumentPagoId', instrumen);
+    formData.append('origenId', originId)
+    formData.append('destinoId', destinationId)
 
-    // const formData = new FormData();
-    // formData.append('walletId', walletSelect);
-    // formData.append('instrumentId', instrumen);
-    // formData.append('fecha_comprobante', fechaComprobante);
-    // formData.append('nro_referencia', referencia);
-    // formData.append('comentario', comentario);
-    // formData.append('clienteId', clientData?.id)
-    // formData.append('instrumentId', instrumentData?.id)
-    // formData.append('creadorId', id)
-    // formData.append('walletId', walletId)
-    // formData.append('rateId', tasaId)
-    // formData.append('origenId', originId)
-    // formData.append('destinoId', destinationId)
-    // formData.append('amount', parseFloat(amountSend))
-    // files.forEach(file => {
-    //   formData.append('comprobante', file);
-    // });
+    files.forEach(file => {
+      formData.append('comprobante', file);
+    });
 
-    // instanceWithToken.post('/recharge/transaction/full', formData, {
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data'
-    //   }
-    // }).then(response => {
-    //   toast.success("Recarga Creada con exito!");
-    //   //navigate("/home");
-    //   setLoading(false)
-    // }).catch(error => {
-    //   toast.error("No se ha podido crear la recarga, intente nuevamente!")
-    //   setLoading(false)
-    // }).finally(() => {
-    //   setLoading(false)
-    // })
+    instanceWithToken.post('/recharge/transaction/full', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }).then(response => {
+      toast.success("Recarga Creada con exito!");
+      navigate("/transactions");
+      setLoading(false)
+    }).catch(error => {
+      toast.error("No se ha podido crear la recarga, intente nuevamente!")
+      setLoading(false)
+    }).finally(() => {
+      setLoading(false)
+    })
   };
 
   useEffect(() => {

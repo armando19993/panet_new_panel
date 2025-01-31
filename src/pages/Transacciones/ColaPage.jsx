@@ -99,7 +99,6 @@ const ColaPage = () => {
     })
   }
 
-
   useEffect(() => {
     getCola();
     getUsers()

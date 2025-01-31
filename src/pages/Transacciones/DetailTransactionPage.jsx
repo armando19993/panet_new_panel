@@ -110,9 +110,38 @@ const DetailTransactionPage = () => {
         />
         {/* Detalle de Creador */}
         <CardComponent
-          title={"Creador"}
+          title={"Comisiones"}
           content={
             <>
+              <LabelLateral
+                title={'Comision Pasarela'}
+                description={transaction ? `${transaction.montoComisionPasarela} ${transaction.origen.currency}` : 'No tiene comision'}
+              />
+
+              <LabelLateral
+                title={'Ganancia Intermediario'}
+                description={transaction ? `${transaction.gananciaIntermediario} ${transaction.origen.currency}` : 'No tiene comision'}
+              />
+
+              <LabelLateral
+                title={'Gastos Adicionales'}
+                description={transaction ? `${transaction.gastosAdicionales} ${transaction.origen.currency}` : 'No tiene comision'}
+              />
+
+              <LabelLateral
+                title={'Ganancia Panet'}
+                description={transaction ? `${transaction.gananciaPanet} ${transaction.origen.currency}` : 'No tiene comision'}
+              />
+
+            </>
+          }
+        />
+        {/* Detalle de Despachador */}
+        <CardComponent
+          title={"Creador / Despachador"}
+          content={
+            <>
+              <p className="font-bold">Creado Por</p>
               <LabelLateral
                 title={"Id:"}
                 description={
@@ -139,14 +168,8 @@ const DetailTransactionPage = () => {
                   transaction.creador ? transaction.creador.phone : "No Posee"
                 }
               />
-            </>
-          }
-        />
-        {/* Detalle de Despachador */}
-        <CardComponent
-          title={"Despachador"}
-          content={
-            <>
+
+              <p className="font-bold">Despachado Por</p>
               <LabelLateral
                 title={"Id:"}
                 description={
