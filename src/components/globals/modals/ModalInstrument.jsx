@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import Cookies from 'js-cookie';
 
-const ModalInstrument = ({ isOpen, setIsOpen, clientId }) => {
+const ModalInstrument = ({ isOpen, setIsOpen, clientId, createCliente = false }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [countries, setCountries] = useState([]);
     const [accountTypes, setAccountTypes] = useState([]);
@@ -22,7 +22,7 @@ const ModalInstrument = ({ isOpen, setIsOpen, clientId }) => {
         countryId: "",
         bankId: "",
         typeInstrument: "PAGO_MOVIL",
-        profit: ""
+        profit: 0
     });
 
     useEffect(() => {
@@ -271,7 +271,7 @@ const ModalInstrument = ({ isOpen, setIsOpen, clientId }) => {
                                 />
                             </Label>
 
-                            <Label>
+                            {!createCliente && <Label>
                                 Ganancia %
                                 <Input
                                     name="profit"
@@ -279,7 +279,7 @@ const ModalInstrument = ({ isOpen, setIsOpen, clientId }) => {
                                     onChange={handleInputChange}
                                     placeholder={'Ganancia %'}
                                 />
-                            </Label>
+                            </Label>}
 
                         </>
                     )}

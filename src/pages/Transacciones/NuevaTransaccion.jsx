@@ -370,7 +370,7 @@ const NuevaTransaccion = () => {
         </DialogContent>
       </Dialog>
 
-      <ModalInstrument clientId={clientData.id} isOpen={createInstrument} setIsOpen={actualizarInstrumento} />
+      <ModalInstrument createCliente={true} clientId={clientData.id} isOpen={createInstrument} setIsOpen={actualizarInstrumento} />
     </div>
   )
 }
