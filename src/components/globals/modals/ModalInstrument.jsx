@@ -2,12 +2,10 @@ import { instanceWithToken } from '@/utils/instance'
 import React, { useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
-import Select from 'react-select'
 import { Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import Cookies from 'js-cookie';
 
 const ModalInstrument = ({ isOpen, setIsOpen, clientId, createCliente = false }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +51,7 @@ const ModalInstrument = ({ isOpen, setIsOpen, clientId, createCliente = false })
             countryId: "",
             bankId: "",
             typeInstrument: "PAGO_MOVIL",
-            profit: ""
+            profit: 0
         });
     };
 
