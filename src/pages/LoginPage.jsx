@@ -23,7 +23,7 @@ export function LoginPage() {
     setLoading(true);
     instance
       .post("auth/login", {
-        user,
+        user: user.toUpperCase(),
         password,
       })
       .then((result) => {

@@ -246,13 +246,15 @@ const RecharguesTransaccions = () => {
     formData.append('nro_referencia', referencia);
     formData.append('instrumentId', instrumen)
     formData.append('clienteId', clientData?.id)
-    formData.append('instrumentPagoId', instrumen);
+    formData.append('instrumentPagoId', instrumentData?.id);
     formData.append('origenId', originId)
     formData.append('destinoId', destinationId)
 
     files.forEach(file => {
       formData.append('comprobante', file);
     });
+
+    console.log(instrumen)
 
     instanceWithToken.post('/recharge/transaction/full', formData, {
       headers: {
